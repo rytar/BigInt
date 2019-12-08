@@ -5,7 +5,7 @@
 #include <vector>
 
 enum class Status {
-    Plus, Minus
+    Plus = 1, Minus = -1
 };
 
 class BigInt {
@@ -46,8 +46,8 @@ public:
     friend BigInt operator & (BigInt, BigInt);
     friend BigInt operator | (BigInt, BigInt);
     friend BigInt operator ^ (BigInt, BigInt);
-    BigInt& operator << (BigInt);
-    BigInt& operator >> (BigInt);
+    BigInt operator << (size_t);
+    BigInt operator >> (size_t);
 
     // 代入演算子
 
@@ -60,8 +60,8 @@ public:
     BigInt& operator &= (const BigInt);
     BigInt& operator |= (const BigInt);
     BigInt& operator ^= (const BigInt);
-    BigInt& operator <<= (const BigInt);
-    BigInt& operator >>= (const BigInt);
+    BigInt& operator <<= (const size_t);
+    BigInt& operator >>= (const size_t);
 
     // インデックス
     BigInt operator [] (const BigInt);
@@ -70,9 +70,24 @@ public:
     friend std::istream& operator >> (std::istream&, BigInt&);
     friend std::ostream& operator << (std::ostream&, const BigInt);
 
+    // // キャスト
+    // operator char() const;
+    // operator unsigned char() const;
+    // operator short() const;
+    // operator unsigned short() const;
+    // operator int() const;
+    // operator unsigned int() const;
+    // operator long() const;
+    // operator unsigned long() const;
+    // operator long long() const;
+    // operator unsigned long long() const;
+    // operator float() const;
+    // operator double() const;
+
     // その他
     size_t size();
     std::vector<size_t> to_binary();
+    BigInt abs();
 };
 
 BigInt binary_to_i(std::vector<size_t>);

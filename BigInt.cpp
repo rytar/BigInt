@@ -1,4 +1,5 @@
 #include <cmath>
+#include <climits>
 #include "BigInt.h"
 
 BigInt::BigInt() {
@@ -31,31 +32,25 @@ BigInt BigInt::operator + () const {
 }
 
 BigInt BigInt::operator - () const {
-    BigInt n = *this;
-    if(this->status == Status::Plus)
-        n.status = Status::Minus;
-    else n.status = Status::Plus;
-    return n;
+    return *this * (-1);
 }
 
 BigInt& BigInt::operator ++ () {
-    *this += 1;
+    *this = *this + 1;
     return *this;
 }
 
 BigInt BigInt::operator ++ (int n) {
-    *this += 1;
-    return *this;
+    return *this + 1;
 }
 
 BigInt& BigInt::operator -- () {
-    *this -= 1;
+    *this = *this - 1;
     return *this;
 }
 
 BigInt BigInt::operator -- (int n) {
-    *this -= 1;
-    return *this;
+    return *this - 1;
 }
 
 BigInt operator + (BigInt n, BigInt k) {
@@ -177,27 +172,27 @@ BigInt operator * (BigInt n, BigInt k) {
         k.element[i + 1] += k.element[i] / 10;
         k.element[i] %= 10;
     }
-    // std::cout << " = " << k << std::endl;
     return k;
 }
 
 BigInt operator / (BigInt n, BigInt k) {
     if(k == 0) throw "Divide by Zero";
-    BigInt save_k = k;
     BigInt c = 1, q = 0;
-    while(n >= k) {
-        if(n >= 2 * k) {
-            k *= 2;
+    BigInt absn = n.abs(), absk = k.abs();
+    BigInt save_k = absk;
+    while(absn >= absk) {
+        if(absn >= 2 * absk) {
+            absk *= 2;
             c *= 2;
         }
         else {
             q += c;
             c = 1;
-            n -= k;
-            k = save_k;
+            absn -= absk;
+            absk = save_k;
         }
     }
-    return q;
+    return q * int(n.status) * int(k.status);
 }
 
 BigInt operator % (BigInt n, BigInt k) {
@@ -243,20 +238,18 @@ BigInt operator ^ (BigInt n, BigInt k) {
     return binary_to_i(b_n);
 }
 
-BigInt& BigInt::operator << (BigInt n) {
-    while(n > 0) {
-        *this *= 2;
-        n--;
+BigInt BigInt::operator << (size_t n) {
+    std::vector<size_t> b = this->to_binary();
+    for(size_t i = 0; i < n; ++i) {
+        b.insert(b.begin(), 0);
     }
-    return *this;
+    return binary_to_i(b);
 }
 
-BigInt& BigInt::operator >> (BigInt n) {
-    while(n > 0) {
-        *this /= 2;
-        n--;
-    }
-    return *this;
+BigInt BigInt::operator >> (size_t n) {
+    std::vector<size_t> b = this->to_binary();
+    b.erase(b.begin(), b.begin() + n);
+    return binary_to_i(b);
 }
 
 // 代入演算
@@ -313,12 +306,12 @@ BigInt& BigInt::operator ^= (const BigInt n) {
     return *this;
 }
 
-BigInt& BigInt::operator <<= (const BigInt n) {
+BigInt& BigInt::operator <<= (const size_t n) {
     *this = *this << n;
     return *this;
 }
 
-BigInt& BigInt::operator >>= (const BigInt n) {
+BigInt& BigInt::operator >>= (const size_t n) {
     *this = *this >> n;
     return *this;
 }
@@ -454,6 +447,22 @@ std::ostream& operator << (std::ostream& out, BigInt n) {
     return out;
 }
 
+// キャスト
+
+// BigInt::operator char() const {
+//     char c = 0;
+//     size_t a = 1;
+//     for(size_t i = 0; i < this->digits; i++) {
+//         c += a * this->element[i];
+//         a *= 10;
+//     }
+//     return c;
+// }
+
+// BigInt::operator unsigned char() const {
+//     unsigned char uc = 0;
+// }
+
 // その他
 
 size_t BigInt::size() {
@@ -471,6 +480,10 @@ std::vector<size_t> BigInt::to_binary() {
     return binary;
 }
 
+BigInt BigInt::abs() {
+    return *this * int(this->status);
+}
+
 BigInt binary_to_i(std::vector<size_t> b) {
     int i, j, val;
     BigInt n;
@@ -483,3 +496,7 @@ BigInt binary_to_i(std::vector<size_t> b) {
     }
     return n;
 }
+
+
+
+
