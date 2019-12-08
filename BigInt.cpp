@@ -359,12 +359,16 @@ BigInt BigInt::operator << (T n) {
     return binary_to_i(b);
 }
 
+template BigInt BigInt::operator << <int>(int);
+
 template<typename T>
 BigInt BigInt::operator >> (T n) {
     std::vector<size_t> b = this->to_binary();
     b.erase(b.begin(), b.begin() + n);
     return binary_to_i(b);
 }
+
+template BigInt BigInt::operator >> <int>(int);
 
 // 代入演算
 
