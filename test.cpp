@@ -17,6 +17,7 @@ void value_test(T n, T k) {
     std::cout << n << " < " << k << " <=> " << (n < k) << std::endl;
     std::cout << n << " >> 2 = " << (n >> 2) << std::endl;
     std::cout << k << " << 3 = " << (k << 3) << std::endl;
+    std::cout << (-n).abs() << " " << (-k).abs() << std::endl;
 }
 
 template<typename T>
@@ -27,7 +28,7 @@ void time_test(T n, T k) {
     auto end = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>
               (end - start).count();
-    std::cout << "time: " << (ms / (k - n)) << "[ms]" << std::endl;
+    std::cout << "time(ave): " << (ms / (k - n)) << "[ms]" << std::endl;
 }
 
 int main() {
@@ -35,4 +36,5 @@ int main() {
     std::cout << "input: ";
     std::cin >> n >> k;
     time_test(n, k);
+    value_test(n, k);
 }

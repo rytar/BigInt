@@ -41,7 +41,8 @@ BigInt& BigInt::operator ++ () {
 }
 
 BigInt BigInt::operator ++ (int n) {
-    return *this + 1;
+    *this = *this + 1;
+    return *this;
 }
 
 BigInt& BigInt::operator -- () {
@@ -50,7 +51,8 @@ BigInt& BigInt::operator -- () {
 }
 
 BigInt BigInt::operator -- (int n) {
-    return *this - 1;
+    *this = *this - 1;
+    return *this;
 }
 
 template<typename T>
@@ -74,6 +76,16 @@ BigInt operator + (BigInt n, T k) {
     return n;
 }
 
+template BigInt operator + <char>(BigInt, char);
+template BigInt operator + <unsigned char>(BigInt, unsigned char);
+template BigInt operator + <short>(BigInt, short);
+template BigInt operator + <unsigned short>(BigInt, unsigned short);
+template BigInt operator + <int>(BigInt, int);
+template BigInt operator + <unsigned int>(BigInt, unsigned int);
+template BigInt operator + <long>(BigInt, long);
+template BigInt operator + <unsigned long>(BigInt, unsigned long);
+template BigInt operator + <long long>(BigInt, long long);
+
 template<typename T>
 BigInt operator + (T n, BigInt k) {
     if(n < k) return k + n;
@@ -96,6 +108,17 @@ BigInt operator + (T n, BigInt k) {
     }
     return k;
 }
+
+template BigInt operator + <char>(char, BigInt);
+template BigInt operator + <unsigned char>(unsigned char, BigInt);
+template BigInt operator + <short>(short, BigInt);
+template BigInt operator + <unsigned short>(unsigned short, BigInt);
+template BigInt operator + <int>(int, BigInt);
+template BigInt operator + <unsigned int>(unsigned int, BigInt);
+template BigInt operator + <long>(long, BigInt);
+template BigInt operator + <unsigned long>(unsigned long, BigInt);
+template BigInt operator + <long long>(long long, BigInt);
+template BigInt operator + <unsigned long long>(unsigned long long, BigInt);
 
 BigInt operator + (BigInt n, BigInt k) {
     size_t i;
@@ -150,10 +173,31 @@ BigInt operator - (BigInt n, T k) {
     return n;
 }
 
+template BigInt operator - <char>(BigInt, char);
+template BigInt operator - <unsigned char>(BigInt, unsigned char);
+template BigInt operator - <short>(BigInt, short);
+template BigInt operator - <unsigned short>(BigInt, unsigned short);
+template BigInt operator - <int>(BigInt, int);
+template BigInt operator - <unsigned int>(BigInt, unsigned int);
+template BigInt operator - <long>(BigInt, long);
+template BigInt operator - <unsigned long>(BigInt, unsigned long);
+template BigInt operator - <long long>(BigInt, long long);
+
 template<typename T>
 BigInt operator - (T n, BigInt k) {
     return BigInt(n) - k;
 }
+
+template BigInt operator - <char>(char, BigInt);
+template BigInt operator - <unsigned char>(unsigned char, BigInt);
+template BigInt operator - <short>(short, BigInt);
+template BigInt operator - <unsigned short>(unsigned short, BigInt);
+template BigInt operator - <int>(int, BigInt);
+template BigInt operator - <unsigned int>(unsigned int, BigInt);
+template BigInt operator - <long>(long, BigInt);
+template BigInt operator - <unsigned long>(unsigned long, BigInt);
+template BigInt operator - <long long>(long long, BigInt);
+template BigInt operator - <unsigned long long>(unsigned long long, BigInt);
 
 BigInt operator - (BigInt n, BigInt k) {
     int i, j, l, tmp, val;
@@ -208,10 +252,31 @@ BigInt operator * (BigInt n, T k) {
     return n * BigInt(k);
 }
 
+template BigInt operator * <char>(BigInt, char);
+template BigInt operator * <unsigned char>(BigInt, unsigned char);
+template BigInt operator * <short>(BigInt, short);
+template BigInt operator * <unsigned short>(BigInt, unsigned short);
+template BigInt operator * <int>(BigInt, int);
+template BigInt operator * <unsigned int>(BigInt, unsigned int);
+template BigInt operator * <long>(BigInt, long);
+template BigInt operator * <unsigned long>(BigInt, unsigned long);
+template BigInt operator * <long long>(BigInt, long long);
+
 template<typename T>
 BigInt operator * (T n, BigInt k) {
     return BigInt(n) * k;
 }
+
+template BigInt operator * <char>(char, BigInt);
+template BigInt operator * <unsigned char>(unsigned char, BigInt);
+template BigInt operator * <short>(short, BigInt);
+template BigInt operator * <unsigned short>(unsigned short, BigInt);
+template BigInt operator * <int>(int, BigInt);
+template BigInt operator * <unsigned int>(unsigned int, BigInt);
+template BigInt operator * <long>(long, BigInt);
+template BigInt operator * <unsigned long>(unsigned long, BigInt);
+template BigInt operator * <long long>(long long, BigInt);
+template BigInt operator * <unsigned long long>(unsigned long long, BigInt);
 
 BigInt operator * (BigInt n, BigInt k) {
     if(n < k) return k * n;
@@ -272,10 +337,31 @@ BigInt operator / (BigInt n, T k) {
     return n / BigInt(k);
 }
 
+template BigInt operator / <char>(BigInt, char);
+template BigInt operator / <unsigned char>(BigInt, unsigned char);
+template BigInt operator / <short>(BigInt, short);
+template BigInt operator / <unsigned short>(BigInt, unsigned short);
+template BigInt operator / <int>(BigInt, int);
+template BigInt operator / <unsigned int>(BigInt, unsigned int);
+template BigInt operator / <long>(BigInt, long);
+template BigInt operator / <unsigned long>(BigInt, unsigned long);
+template BigInt operator / <long long>(BigInt, long long);
+
 template<typename T>
 BigInt operator / (T n, BigInt k) {
     return BigInt(n) / k;
 }
+
+template BigInt operator / <char>(char, BigInt);
+template BigInt operator / <unsigned char>(unsigned char, BigInt);
+template BigInt operator / <short>(short, BigInt);
+template BigInt operator / <unsigned short>(unsigned short, BigInt);
+template BigInt operator / <int>(int, BigInt);
+template BigInt operator / <unsigned int>(unsigned int, BigInt);
+template BigInt operator / <long>(long, BigInt);
+template BigInt operator / <unsigned long>(unsigned long, BigInt);
+template BigInt operator / <long long>(long long, BigInt);
+template BigInt operator / <unsigned long long>(unsigned long long, BigInt);
 
 BigInt operator / (BigInt n, BigInt k) {
     if(k == 0) throw "Divide by Zero";
@@ -302,10 +388,31 @@ BigInt operator % (BigInt n, T k) {
     return n % BigInt(k);
 }
 
+template BigInt operator % <char>(BigInt, char);
+template BigInt operator % <unsigned char>(BigInt, unsigned char);
+template BigInt operator % <short>(BigInt, short);
+template BigInt operator % <unsigned short>(BigInt, unsigned short);
+template BigInt operator % <int>(BigInt, int);
+template BigInt operator % <unsigned int>(BigInt, unsigned int);
+template BigInt operator % <long>(BigInt, long);
+template BigInt operator % <unsigned long>(BigInt, unsigned long);
+template BigInt operator % <long long>(BigInt, long long);
+
 template<typename T>
 BigInt operator % (T n, BigInt k) {
     return BigInt(n) % k;
 }
+
+template BigInt operator % <char>(char, BigInt);
+template BigInt operator % <unsigned char>(unsigned char, BigInt);
+template BigInt operator % <short>(short, BigInt);
+template BigInt operator % <unsigned short>(unsigned short, BigInt);
+template BigInt operator % <int>(int, BigInt);
+template BigInt operator % <unsigned int>(unsigned int, BigInt);
+template BigInt operator % <long>(long, BigInt);
+template BigInt operator % <unsigned long>(unsigned long, BigInt);
+template BigInt operator % <long long>(long long, BigInt);
+template BigInt operator % <unsigned long long>(unsigned long long, BigInt);
 
 BigInt operator % (BigInt n, BigInt k) {
     return n - k * (n / k);
@@ -441,10 +548,31 @@ bool operator > (BigInt n, T k) {
     return n > BigInt(k);
 }
 
+template bool operator > <char>(BigInt, char);
+template bool operator > <unsigned char>(BigInt, unsigned char);
+template bool operator > <short>(BigInt, short);
+template bool operator > <unsigned short>(BigInt, unsigned short);
+template bool operator > <int>(BigInt, int);
+template bool operator > <unsigned int>(BigInt, unsigned int);
+template bool operator > <long>(BigInt, long);
+template bool operator > <unsigned long>(BigInt, unsigned long);
+template bool operator > <long long>(BigInt, long long);
+
 template<typename T>
 bool operator > (T n, BigInt k) {
     return BigInt(n) > k;
 }
+
+template bool operator > <char>(char, BigInt);
+template bool operator > <unsigned char>(unsigned char, BigInt);
+template bool operator > <short>(short, BigInt);
+template bool operator > <unsigned short>(unsigned short, BigInt);
+template bool operator > <int>(int, BigInt);
+template bool operator > <unsigned int>(unsigned int, BigInt);
+template bool operator > <long>(long, BigInt);
+template bool operator > <unsigned long>(unsigned long, BigInt);
+template bool operator > <long long>(long long, BigInt);
+template bool operator > <unsigned long long>(unsigned long long, BigInt);
 
 bool operator > (BigInt n, BigInt k) {
     if(n.status == Status::Plus && k.status == Status::Minus) return true;
@@ -469,10 +597,31 @@ bool operator >= (BigInt n, T k) {
     return n >= BigInt(k);
 }
 
+template bool operator >= <char>(BigInt, char);
+template bool operator >= <unsigned char>(BigInt, unsigned char);
+template bool operator >= <short>(BigInt, short);
+template bool operator >= <unsigned short>(BigInt, unsigned short);
+template bool operator >= <int>(BigInt, int);
+template bool operator >= <unsigned int>(BigInt, unsigned int);
+template bool operator >= <long>(BigInt, long);
+template bool operator >= <unsigned long>(BigInt, unsigned long);
+template bool operator >= <long long>(BigInt, long long);
+
 template<typename T>
 bool operator >= (T n, BigInt k) {
     return BigInt(n) >= k;
 }
+
+template bool operator >= <char>(char, BigInt);
+template bool operator >= <unsigned char>(unsigned char, BigInt);
+template bool operator >= <short>(short, BigInt);
+template bool operator >= <unsigned short>(unsigned short, BigInt);
+template bool operator >= <int>(int, BigInt);
+template bool operator >= <unsigned int>(unsigned int, BigInt);
+template bool operator >= <long>(long, BigInt);
+template bool operator >= <unsigned long>(unsigned long, BigInt);
+template bool operator >= <long long>(long long, BigInt);
+template bool operator >= <unsigned long long>(unsigned long long, BigInt);
 
 bool operator >= (BigInt n, BigInt k) {
     if(n.status == Status::Plus && k.status == Status::Minus) return true;
@@ -497,10 +646,31 @@ bool operator < (BigInt n, T k) {
     return n < BigInt(k);
 }
 
+template bool operator < <char>(BigInt, char);
+template bool operator < <unsigned char>(BigInt, unsigned char);
+template bool operator < <short>(BigInt, short);
+template bool operator < <unsigned short>(BigInt, unsigned short);
+template bool operator < <int>(BigInt, int);
+template bool operator < <unsigned int>(BigInt, unsigned int);
+template bool operator < <long>(BigInt, long);
+template bool operator < <unsigned long>(BigInt, unsigned long);
+template bool operator < <long long>(BigInt, long long);
+
 template<typename T>
 bool operator < (T n, BigInt k) {
     return BigInt(n) < k;
 }
+
+template bool operator < <char>(char, BigInt);
+template bool operator < <unsigned char>(unsigned char, BigInt);
+template bool operator < <short>(short, BigInt);
+template bool operator < <unsigned short>(unsigned short, BigInt);
+template bool operator < <int>(int, BigInt);
+template bool operator < <unsigned int>(unsigned int, BigInt);
+template bool operator < <long>(long, BigInt);
+template bool operator < <unsigned long>(unsigned long, BigInt);
+template bool operator < <long long>(long long, BigInt);
+template bool operator < <unsigned long long>(unsigned long long, BigInt);
 
 bool operator < (BigInt n, BigInt k) {
     if(n.status == Status::Plus && k.status == Status::Minus) return false;
@@ -525,10 +695,31 @@ bool operator <= (BigInt n, T k) {
     return n <= BigInt(k);
 }
 
+template bool operator <= <char>(BigInt, char);
+template bool operator <= <unsigned char>(BigInt, unsigned char);
+template bool operator <= <short>(BigInt, short);
+template bool operator <= <unsigned short>(BigInt, unsigned short);
+template bool operator <= <int>(BigInt, int);
+template bool operator <= <unsigned int>(BigInt, unsigned int);
+template bool operator <= <long>(BigInt, long);
+template bool operator <= <unsigned long>(BigInt, unsigned long);
+template bool operator <= <long long>(BigInt, long long);
+
 template<typename T>
 bool operator <= (T n, BigInt k) {
     return BigInt(n) <= k;
 }
+
+template bool operator <= <char>(char, BigInt);
+template bool operator <= <unsigned char>(unsigned char, BigInt);
+template bool operator <= <short>(short, BigInt);
+template bool operator <= <unsigned short>(unsigned short, BigInt);
+template bool operator <= <int>(int, BigInt);
+template bool operator <= <unsigned int>(unsigned int, BigInt);
+template bool operator <= <long>(long, BigInt);
+template bool operator <= <unsigned long>(unsigned long, BigInt);
+template bool operator <= <long long>(long long, BigInt);
+template bool operator <= <unsigned long long>(unsigned long long, BigInt);
 
 bool operator <= (BigInt n, BigInt k) {
     if(n.status == Status::Plus && k.status == Status::Minus) return false;
@@ -553,10 +744,31 @@ bool operator == (BigInt n, T k) {
     return n == BigInt(k);
 }
 
+template bool operator == <char>(BigInt, char);
+template bool operator == <unsigned char>(BigInt, unsigned char);
+template bool operator == <short>(BigInt, short);
+template bool operator == <unsigned short>(BigInt, unsigned short);
+template bool operator == <int>(BigInt, int);
+template bool operator == <unsigned int>(BigInt, unsigned int);
+template bool operator == <long>(BigInt, long);
+template bool operator == <unsigned long>(BigInt, unsigned long);
+template bool operator == <long long>(BigInt, long long);
+
 template<typename T>
 bool operator == (T n, BigInt k) {
     return BigInt(n) == k;
 }
+
+template bool operator == <char>(char, BigInt);
+template bool operator == <unsigned char>(unsigned char, BigInt);
+template bool operator == <short>(short, BigInt);
+template bool operator == <unsigned short>(unsigned short, BigInt);
+template bool operator == <int>(int, BigInt);
+template bool operator == <unsigned int>(unsigned int, BigInt);
+template bool operator == <long>(long, BigInt);
+template bool operator == <unsigned long>(unsigned long, BigInt);
+template bool operator == <long long>(long long, BigInt);
+template bool operator == <unsigned long long>(unsigned long long, BigInt);
 
 bool operator == (BigInt n, BigInt k) {
     if(n.status != k.status) return false;
@@ -568,14 +780,35 @@ bool operator == (BigInt n, BigInt k) {
 }
 
 template<typename T>
-BigInt operator != (BigInt n, T k) {
+bool operator != (BigInt n, T k) {
     return n != BigInt(k);
 }
 
+template bool operator != <char>(BigInt, char);
+template bool operator != <unsigned char>(BigInt, unsigned char);
+template bool operator != <short>(BigInt, short);
+template bool operator != <unsigned short>(BigInt, unsigned short);
+template bool operator != <int>(BigInt, int);
+template bool operator != <unsigned int>(BigInt, unsigned int);
+template bool operator != <long>(BigInt, long);
+template bool operator != <unsigned long>(BigInt, unsigned long);
+template bool operator != <long long>(BigInt, long long);
+
 template<typename T>
-BigInt operator != (T n, BigInt k) {
+bool operator != (T n, BigInt k) {
     return BigInt(n) != k;
 }
+
+template bool operator != <char>(char, BigInt);
+template bool operator != <unsigned char>(unsigned char, BigInt);
+template bool operator != <short>(short, BigInt);
+template bool operator != <unsigned short>(unsigned short, BigInt);
+template bool operator != <int>(int, BigInt);
+template bool operator != <unsigned int>(unsigned int, BigInt);
+template bool operator != <long>(long, BigInt);
+template bool operator != <unsigned long>(unsigned long, BigInt);
+template bool operator != <long long>(long long, BigInt);
+template bool operator != <unsigned long long>(unsigned long long, BigInt);
 
 bool operator != (BigInt n, BigInt k) {
     if(n.status != k.status) return true;
@@ -638,12 +871,32 @@ BigInt::operator char() const {
 
 BigInt::operator unsigned char() const {
     if(*this < 0 || *this > UCHAR_MAX) return 0;
-    unsigned char c = 0, a = 1;
+    unsigned char uc = 0, a = 1;
     for(size_t i = 0; i < this->digits; ++i) {
-        c += a * this->element[i];
+        uc += a * this->element[i];
         a *= 10;
     }
-    return c;
+    return uc;
+}
+
+BigInt::operator short() const {
+    if(*this > SHRT_MAX || *this < SHRT_MIN) return 0;
+    short s = 0, a = 1;
+    for(size_t i = 0; i < this->digits; ++i) {
+        s += a * this->element[i];
+        a *= 10;
+    }
+    return s * short(this->status);
+}
+
+BigInt::operator unsigned short() const {
+    if(*this < 0 || *this > USHRT_MAX) return 0;
+    unsigned short us = 0, a = 1;
+    for(size_t i = 0; i < this->digits; ++i) {
+        us += a * this->element[i];
+        a *= 10;
+    }
+    return us;
 }
 
 BigInt::operator int() const {
@@ -658,12 +911,12 @@ BigInt::operator int() const {
 
 BigInt::operator unsigned int() const {
     if(*this < 0 || *this > UINT_MAX) return 0;
-    unsigned int i = 0, a = 1;
-    for(size_t j = 0; j < this->digits; ++j) {
-        i += a * this->element[j];
+    unsigned int ui = 0, a = 1;
+    for(size_t i = 0; i < this->digits; ++i) {
+        ui += a * this->element[i];
         a *= 10;
     }
-    return i;
+    return ui;
 }
 
 BigInt::operator long() const {

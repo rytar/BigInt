@@ -119,6 +119,8 @@ public:
     // キャスト
     operator char() const;
     operator unsigned char() const;
+    operator short() const;
+    operator unsigned short() const;
     operator int() const;
     operator unsigned int() const;
     operator long() const;
