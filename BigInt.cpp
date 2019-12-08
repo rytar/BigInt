@@ -53,8 +53,52 @@ BigInt BigInt::operator -- (int n) {
     return *this - 1;
 }
 
+template<typename T>
+BigInt operator + (BigInt n, T k) {
+    if(n < k) return k + n;
+
+    for(size_t i = 0; k != 0; i++) {
+        n.element[i] += k % 10;
+        k /= 10;
+    }
+    for(size_t i = 0; i < n.digits; i++) {
+        if(i + 1 == n.element.size())
+            n.element.resize(n.element.size() * 2);
+
+        if(i == n.digits - 1 && n.element[i] > 9)
+            n.digits++;
+
+        n.element[i + 1] += n.element[i] / 10;
+        n.element[i] %= 10;
+    }
+    return n;
+}
+
+template<typename T>
+BigInt operator + (T n, BigInt k) {
+    if(n < k) return k + n;
+
+    for(size_t i = 0; n != 0; i++) {
+        if(i + 1 == k.element.size())
+            k.element.resize(k.element.size() * 2);
+        k.element[i] += n % 10;
+        n /= 10;
+    }
+    for(size_t i = 0; i < k.digits; i++) {
+        if(i + 1 == k.element.size())
+            k.element.resize(k.element.size() * 2);
+
+        if(i == k.digits - 1 && k.element[i] > 9)
+            k.digits++;
+
+        k.element[i + 1] += k.element[i] / 10;
+        k.element[i] %= 10;
+    }
+    return k;
+}
+
 BigInt operator + (BigInt n, BigInt k) {
-    int i;
+    size_t i;
     if(n < k) return k + n;
     if(k.status == Status::Minus) {
         k.status = Status::Plus;
@@ -75,6 +119,40 @@ BigInt operator + (BigInt n, BigInt k) {
         n.element[i] %= 10;
     }
     return n;
+}
+
+template<typename T>
+BigInt operator - (BigInt n, T k) {
+    if(n < k) return -(k - n);
+    if(k < 0) return n + (-k);
+
+    for(size_t i = 0; k != 0; i++) {
+        if(n.element[i] < (k % 10)) {
+            n.element[i] += 10;
+            for(size_t j = 1; ; j++) {
+                if(n.element[i + j] != 0) {
+                    n.element[i + j]--;
+                    break;
+                }
+                else n.element[i + j] = 9;
+            }
+        }
+        n.element[i] -= k % 10;
+        k /= 10;
+    }
+    
+    for(size_t i = n.digits - 1; i > 0; i--) {
+        if(n.element[i] == 0) {
+            n.digits--;
+        }
+        else break;
+    }
+    return n;
+}
+
+template<typename T>
+BigInt operator - (T n, BigInt k) {
+    return BigInt(n) - k;
 }
 
 BigInt operator - (BigInt n, BigInt k) {
@@ -125,10 +203,24 @@ BigInt karatsuba(BigInt n, BigInt k) {
     return n1 * k1 + (n1 * k2 + n2 * k1) * B + n2 * k2 * B * B;
 }
 
+template<typename T>
+BigInt operator * (BigInt n, T k) {
+    return n * BigInt(k);
+}
+
+template<typename T>
+BigInt operator * (T n, BigInt k) {
+    return BigInt(n) * k;
+}
+
 BigInt operator * (BigInt n, BigInt k) {
-    int i, j;
-    BigInt tmp = k;
+    if(n < k) return k * n;
     if(n == 0 || k == 0) return 0;
+    // BigInt absn = n.abs(), absk = k.abs();
+    // if(absn < int(sqrt(LLONG_MAX)) && absk < int(sqrt(LLONG_MAX))) return BigInt((long long)n * (long long)k);
+    // if(absn < int(sqrt(INT_MAX)) && absk < int(sqrt(INT_MAX))) return BigInt(int(n) * int(k));
+    size_t i, j;
+    BigInt tmp = k;
 
     if(n.status == k.status)
         k.status = Status::Plus;
@@ -175,6 +267,16 @@ BigInt operator * (BigInt n, BigInt k) {
     return k;
 }
 
+template<typename T>
+BigInt operator / (BigInt n, T k) {
+    return n / BigInt(k);
+}
+
+template<typename T>
+BigInt operator / (T n, BigInt k) {
+    return BigInt(n) / k;
+}
+
 BigInt operator / (BigInt n, BigInt k) {
     if(k == 0) throw "Divide by Zero";
     BigInt c = 1, q = 0;
@@ -193,6 +295,16 @@ BigInt operator / (BigInt n, BigInt k) {
         }
     }
     return q * int(n.status) * int(k.status);
+}
+
+template<typename T>
+BigInt operator % (BigInt n, T k) {
+    return n % BigInt(k);
+}
+
+template<typename T>
+BigInt operator % (T n, BigInt k) {
+    return BigInt(n) % k;
 }
 
 BigInt operator % (BigInt n, BigInt k) {
@@ -238,7 +350,8 @@ BigInt operator ^ (BigInt n, BigInt k) {
     return binary_to_i(b_n);
 }
 
-BigInt BigInt::operator << (size_t n) {
+template<typename T>
+BigInt BigInt::operator << (T n) {
     std::vector<size_t> b = this->to_binary();
     for(size_t i = 0; i < n; ++i) {
         b.insert(b.begin(), 0);
@@ -246,7 +359,8 @@ BigInt BigInt::operator << (size_t n) {
     return binary_to_i(b);
 }
 
-BigInt BigInt::operator >> (size_t n) {
+template<typename T>
+BigInt BigInt::operator >> (T n) {
     std::vector<size_t> b = this->to_binary();
     b.erase(b.begin(), b.begin() + n);
     return binary_to_i(b);
@@ -318,6 +432,16 @@ BigInt& BigInt::operator >>= (const size_t n) {
 
 // 比較演算
 
+template<typename T>
+bool operator > (BigInt n, T k) {
+    return n > BigInt(k);
+}
+
+template<typename T>
+bool operator > (T n, BigInt k) {
+    return BigInt(n) > k;
+}
+
 bool operator > (BigInt n, BigInt k) {
     if(n.status == Status::Plus && k.status == Status::Minus) return true;
     if(n.status == Status::Minus && k.status == Status::Plus) return false;
@@ -334,6 +458,16 @@ bool operator > (BigInt n, BigInt k) {
         if(n.element[i] < k.element[i]) return !flag;
     }
     return false;
+}
+
+template<typename T>
+bool operator >= (BigInt n, T k) {
+    return n >= BigInt(k);
+}
+
+template<typename T>
+bool operator >= (T n, BigInt k) {
+    return BigInt(n) >= k;
 }
 
 bool operator >= (BigInt n, BigInt k) {
@@ -354,6 +488,16 @@ bool operator >= (BigInt n, BigInt k) {
     return true;
 }
 
+template<typename T>
+bool operator < (BigInt n, T k) {
+    return n < BigInt(k);
+}
+
+template<typename T>
+bool operator < (T n, BigInt k) {
+    return BigInt(n) < k;
+}
+
 bool operator < (BigInt n, BigInt k) {
     if(n.status == Status::Plus && k.status == Status::Minus) return false;
     if(n.status == Status::Minus && k.status == Status::Plus) return true;
@@ -370,6 +514,16 @@ bool operator < (BigInt n, BigInt k) {
         if(n.element[i] > k.element[i]) return !flag;
     }
     return false;
+}
+
+template<typename T>
+bool operator <= (BigInt n, T k) {
+    return n <= BigInt(k);
+}
+
+template<typename T>
+bool operator <= (T n, BigInt k) {
+    return BigInt(n) <= k;
 }
 
 bool operator <= (BigInt n, BigInt k) {
@@ -390,6 +544,15 @@ bool operator <= (BigInt n, BigInt k) {
     return true;
 }
 
+template<typename T>
+bool operator == (BigInt n, T k) {
+    return n == BigInt(k);
+}
+
+template<typename T>
+bool operator == (T n, BigInt k) {
+    return BigInt(n) == k;
+}
 
 bool operator == (BigInt n, BigInt k) {
     if(n.status != k.status) return false;
@@ -398,6 +561,16 @@ bool operator == (BigInt n, BigInt k) {
         if(n.element[i] != k.element[i]) return false;
     }
     return true;
+}
+
+template<typename T>
+BigInt operator != (BigInt n, T k) {
+    return n != BigInt(k);
+}
+
+template<typename T>
+BigInt operator != (T n, BigInt k) {
+    return BigInt(n) != k;
 }
 
 bool operator != (BigInt n, BigInt k) {
@@ -449,18 +622,106 @@ std::ostream& operator << (std::ostream& out, BigInt n) {
 
 // キャスト
 
-// BigInt::operator char() const {
-//     char c = 0;
-//     size_t a = 1;
-//     for(size_t i = 0; i < this->digits; i++) {
-//         c += a * this->element[i];
+BigInt::operator char() const {
+    if(*this > CHAR_MAX || *this < CHAR_MIN) return 0;
+    char c = 0, a = 1;
+    for(size_t i = 0; i < this->digits; ++i) {
+        c += a * this->element[i];
+        a *= 10;
+    }
+    return c * char(this->status);
+}
+
+BigInt::operator unsigned char() const {
+    if(*this < 0 || *this > UCHAR_MAX) return 0;
+    unsigned char c = 0, a = 1;
+    for(size_t i = 0; i < this->digits; ++i) {
+        c += a * this->element[i];
+        a *= 10;
+    }
+    return c;
+}
+
+BigInt::operator int() const {
+    if(*this > INT_MAX || *this < INT_MIN) return 0;
+    int i = 0, a = 1;
+    for(size_t j = 0; j < this->digits; ++j) {
+        i += a * this->element[j];
+        a *= 10;
+    }
+    return i * int(this->status);
+}
+
+BigInt::operator unsigned int() const {
+    if(*this < 0 || *this > UINT_MAX) return 0;
+    unsigned int i = 0, a = 1;
+    for(size_t j = 0; j < this->digits; ++j) {
+        i += a * this->element[j];
+        a *= 10;
+    }
+    return i;
+}
+
+BigInt::operator long() const {
+    if(*this > LONG_MAX || *this < LONG_MIN) return 0;
+    long l = 0, a = 1;
+    for(size_t i = 0; i < this->digits; ++i) {
+        l += a * this->element[i];
+        a *= 10;
+    }
+    return l * int(this->status);
+}
+
+BigInt::operator unsigned long() const {
+    if(*this < 0 || *this > ULONG_MAX) return 0;
+    unsigned long l = 0, a = 1;
+    for(size_t i = 0; i < this->digits; ++i) {
+        l += a * this->element[i];
+        a *= 10;
+    }
+    return l;
+}
+
+BigInt::operator long long() const {
+    if(*this > LLONG_MAX || *this < LLONG_MIN) return 0;
+    long ll = 0, a = 1;
+    for(size_t i = 0; i < this->digits; ++i) {
+        ll += a * this->element[i];
+        a *= 10;
+    }
+    return ll * int(this->status);
+}
+
+BigInt::operator unsigned long long() const {
+    if(*this < 0 || *this > ULLONG_MAX) return 0;
+    unsigned long ll = 0, a = 1;
+    for(size_t i = 0; i < this->digits; ++i) {
+        ll += a * this->element[i];
+        a *= 10;
+    }
+    return ll;
+}
+
+// BigInt::operator float() const {
+//     if(*this > LC_MAX || *this < LC_MIN) return 0.0;
+//     float f = 0.0;
+//     int a = 1;
+//     for(size_t i = 0; i < this->digits; ++i) {
+//         f += a * this->element[i];
 //         a *= 10;
 //     }
-//     return c;
+//     return f;
 // }
 
-// BigInt::operator unsigned char() const {
-//     unsigned char uc = 0;
+// BigInt::operator double() const {
+//     if(*this > TMP_MAX || *this < TMP_MAX) return 0.0;
+//     double d = 0.0;
+//     int a = 1;
+//     for(size_t i = 0; i < this->digits; ++i) {
+//         d += a * this->element[i];
+//         a *= 10;
+//     }
+//     return d;
 // }
 
 // その他
@@ -496,7 +757,3 @@ BigInt binary_to_i(std::vector<size_t> b) {
     }
     return n;
 }
-
-
-
-
