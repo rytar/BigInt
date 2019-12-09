@@ -18,7 +18,7 @@ private:
 public:
     BigInt();
     BigInt(long long);
-    BigInt(std::string);
+    BigInt(const std::string);
 
     // 算術演算
     BigInt operator + () const;
@@ -89,6 +89,10 @@ public:
 
     // 論理演算子
     BigInt& operator ~ ();
+    template<typename T>
+    friend BigInt operator & (BigInt, T);
+    template<typename T>
+    friend BigInt operator & (T, BigInt);
     friend BigInt operator & (BigInt, BigInt);
     friend BigInt operator | (BigInt, BigInt);
     friend BigInt operator ^ (BigInt, BigInt);

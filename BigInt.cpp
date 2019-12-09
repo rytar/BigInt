@@ -396,6 +396,40 @@ BigInt& BigInt::operator ~ () {
     return *this;
 }
 
+template<typename T>
+BigInt operator & (BigInt n, T k) {
+    return n & BigInt(k);
+}
+
+template BigInt operator & <char>(BigInt, char);
+template BigInt operator & <unsigned char>(BigInt, unsigned char);
+template BigInt operator & <short>(BigInt, short);
+template BigInt operator & <unsigned short>(BigInt, unsigned short);
+template BigInt operator & <int>(BigInt, int);
+template BigInt operator & <unsigned int>(BigInt, unsigned int);
+template BigInt operator & <long>(BigInt, long);
+template BigInt operator & <unsigned long>(BigInt, unsigned long);
+template BigInt operator & <long long>(BigInt, long long);
+template BigInt operator & <unsigned long long>(BigInt, unsigned long long);
+template BigInt operator & <std::string>(BigInt, std::string);
+
+template<typename T>
+BigInt operator & (T n, BigInt k) {
+    return BigInt(n) & k;
+}
+
+template BigInt operator & <char>(char, BigInt);
+template BigInt operator & <unsigned char>(unsigned char, BigInt);
+template BigInt operator & <short>(short, BigInt);
+template BigInt operator & <unsigned short>(unsigned short, BigInt);
+template BigInt operator & <int>(int, BigInt);
+template BigInt operator & <unsigned int>(unsigned int, BigInt);
+template BigInt operator & <long>(long, BigInt);
+template BigInt operator & <unsigned long>(unsigned long, BigInt);
+template BigInt operator & <long long>(long long, BigInt);
+template BigInt operator & <unsigned long long>(unsigned long long, BigInt);
+template BigInt operator & <std::string>(std::string, BigInt);
+
 BigInt operator & (BigInt n, BigInt k) {
     if(n < k) return k & n;
     std::vector<size_t> b_n = n.to_binary(), b_k = k.to_binary();
@@ -406,6 +440,40 @@ BigInt operator & (BigInt n, BigInt k) {
     return binary_to_i(b_k);
 }
 
+template<typename T>
+BigInt operator | (BigInt n, T k) {
+    return n | BigInt(k);
+}
+
+template BigInt operator | <char>(BigInt, char);
+template BigInt operator | <unsigned char>(BigInt, unsigned char);
+template BigInt operator | <short>(BigInt, short);
+template BigInt operator | <unsigned short>(BigInt, unsigned short);
+template BigInt operator | <int>(BigInt, int);
+template BigInt operator | <unsigned int>(BigInt, unsigned int);
+template BigInt operator | <long>(BigInt, long);
+template BigInt operator | <unsigned long>(BigInt, unsigned long);
+template BigInt operator | <long long>(BigInt, long long);
+template BigInt operator | <unsigned long long>(BigInt, unsigned long long);
+template BigInt operator | <std::string>(BigInt, std::string);
+
+template<typename T>
+BigInt operator | (T n, BigInt k) {
+    return BigInt(n) | k;
+}
+
+template BigInt operator | <char>(char, BigInt);
+template BigInt operator | <unsigned char>(unsigned char, BigInt);
+template BigInt operator | <short>(short, BigInt);
+template BigInt operator | <unsigned short>(unsigned short, BigInt);
+template BigInt operator | <int>(int, BigInt);
+template BigInt operator | <unsigned int>(unsigned int, BigInt);
+template BigInt operator | <long>(long, BigInt);
+template BigInt operator | <unsigned long>(unsigned long, BigInt);
+template BigInt operator | <long long>(long long, BigInt);
+template BigInt operator | <unsigned long long>(unsigned long long, BigInt);
+template BigInt operator | <std::string>(std::string, BigInt);
+
 BigInt operator | (BigInt n, BigInt k) {
     if(n < k) return k | n;
     std::vector<size_t> b_n = n.to_binary(), b_k = k.to_binary();
@@ -415,6 +483,41 @@ BigInt operator | (BigInt n, BigInt k) {
     }
     return binary_to_i(b_n);
 }
+
+template<typename T>
+BigInt operator ^ (BigInt n, T k) {
+    return n ^ BigInt(k);
+}
+
+template BigInt operator ^ <char>(BigInt, char);
+template BigInt operator ^ <unsigned char>(BigInt, unsigned char);
+template BigInt operator ^ <short>(BigInt, short);
+template BigInt operator ^ <unsigned short>(BigInt, unsigned short);
+template BigInt operator ^ <int>(BigInt, int);
+template BigInt operator ^ <unsigned int>(BigInt, unsigned int);
+template BigInt operator ^ <long>(BigInt, long);
+template BigInt operator ^ <unsigned long>(BigInt, unsigned long);
+template BigInt operator ^ <long long>(BigInt, long long);
+template BigInt operator ^ <unsigned long long>(BigInt, unsigned long long);
+template BigInt operator ^ <std::string>(BigInt, std::string);
+
+template<typename T>
+BigInt operator ^ (T n, BigInt k) {
+    return BigInt(n) ^ k;
+}
+
+template BigInt operator ^ <char>(char, BigInt);
+template BigInt operator ^ <unsigned char>(unsigned char, BigInt);
+template BigInt operator ^ <short>(short, BigInt);
+template BigInt operator ^ <unsigned short>(unsigned short, BigInt);
+template BigInt operator ^ <int>(int, BigInt);
+template BigInt operator ^ <unsigned int>(unsigned int, BigInt);
+template BigInt operator ^ <long>(long, BigInt);
+template BigInt operator ^ <unsigned long>(unsigned long, BigInt);
+template BigInt operator ^ <long long>(long long, BigInt);
+template BigInt operator ^ <unsigned long long>(unsigned long long, BigInt);
+template BigInt operator ^ <std::string>(std::string, BigInt);
+
 
 BigInt operator ^ (BigInt n, BigInt k) {
     if(n < k) return k ^ n;
