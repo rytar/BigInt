@@ -29,6 +29,8 @@ void value_test(T n, T k) {
     std::cout << "unsigned long: " << (unsigned long)n << " " << (unsigned long)k << std::endl;
     std::cout << "long long: " << (long long)n << " " << (long long)k << std::endl;
     std::cout << "unsigned long long: " << (unsigned long long)n << " " << (unsigned long long)k << std::endl;
+    for(auto i : n.to_binary()) std::cout << i;
+    std::cout << std::endl << binary_to_i(n.to_binary()) << std::endl;
 }
 
 template<typename T>

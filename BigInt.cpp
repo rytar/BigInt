@@ -824,19 +824,13 @@ BigInt BigInt::operator [] (const BigInt n) {
 // 入力・出力
 
 std::istream& operator >> (std::istream& in, BigInt& n) {
-    long long k;
-    in >> k;
-    if(k < 0) {
-        n.status = Status::Minus;
-        k *= -1;
-    }
-    for(int i = 0; k > 0; i++) {
-        if(i == n.element.size())
-            n.element.resize(n.element.size() * 2);
-        
-        n.element[i] = k % 10;
-        k /= 10;
-        n.digits = i + 1;
+    std::string s;
+    in >> s;
+    n.digits = s.size();
+    n.element.resize(n.digits + 50);
+    for(size_t i = 0; i < n.digits; ++i) {
+        if(s[n.digits - i - 1] == '-') n.status = Status::Minus;
+        else n.element[i] = s[n.digits - i - 1] - '0';
     }
     return in;
 }
@@ -983,8 +977,7 @@ std::vector<size_t> BigInt::to_binary() {
     std::vector<size_t> binary;
     BigInt n = *this;
     while(n > 0) {
-        if(n % 2 == 0) binary.push_back(0);
-        else binary.push_back(1);
+        binary.push_back(n % 2);
         n /= 2;
     }
     return binary;
