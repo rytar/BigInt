@@ -18,14 +18,13 @@ BigInt::BigInt(long long n) {
     }
     else status = Status::Plus;
 
-    long long l = n;
-    l /= 10;
-    for(digits = 1; l > 0; digits++) l /= 10;
-    element.resize(digits + 50);
-    for(int i = 0; i < digits; i++) {
-        element[i] = n % 10;
+    digits = 0;
+    while(n > 0) {
+        element.push_back(n % 10);
         n /= 10;
+        digits++;
     }
+    element.resize(digits + 50);
 }
 
 BigInt::BigInt(const std::string s) {
