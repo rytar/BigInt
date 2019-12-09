@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 
 enum class Status {
     Plus = 1, Minus = -1
@@ -17,6 +18,7 @@ private:
 public:
     BigInt();
     BigInt(long long);
+    BigInt(std::string);
 
     // 算術演算
     BigInt operator + () const;

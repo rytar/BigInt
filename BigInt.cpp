@@ -1,6 +1,9 @@
 #include <cmath>
 #include <climits>
+#include <string>
 #include "BigInt.h"
+
+#define STRING(str) #str
 
 BigInt::BigInt() {
     element.resize(50);
@@ -22,6 +25,15 @@ BigInt::BigInt(long long n) {
     for(int i = 0; i < digits; i++) {
         element[i] = n % 10;
         n /= 10;
+    }
+}
+
+BigInt::BigInt(const std::string s) {
+    digits = s.size();
+    element.resize(digits + 50);
+    for(size_t i = 0; i < digits; ++i) {
+        if(s[digits - i - 1] == '-') status = Status::Minus;
+        else element[i] = s[digits - i - 1] - '0';
     }
 }
 
@@ -70,6 +82,7 @@ template BigInt operator + <long>(BigInt, long);
 template BigInt operator + <unsigned long>(BigInt, unsigned long);
 template BigInt operator + <long long>(BigInt, long long);
 template BigInt operator + <unsigned long long>(BigInt, unsigned long long);
+template BigInt operator + <std::string>(BigInt, std::string);
 
 template<typename T>
 BigInt operator + (T n, BigInt k) {
@@ -86,6 +99,7 @@ template BigInt operator + <long>(long, BigInt);
 template BigInt operator + <unsigned long>(unsigned long, BigInt);
 template BigInt operator + <long long>(long long, BigInt);
 template BigInt operator + <unsigned long long>(unsigned long long, BigInt);
+template BigInt operator + <std::string>(std::string, BigInt);
 
 BigInt operator + (BigInt n, BigInt k) {
     size_t i;
@@ -113,31 +127,7 @@ BigInt operator + (BigInt n, BigInt k) {
 
 template<typename T>
 BigInt operator - (BigInt n, T k) {
-    if(n < k) return -(k - n);
-    if(k < 0) return n + (-k);
-
-    for(size_t i = 0; k != 0; i++) {
-        if(n.element[i] < (k % 10)) {
-            n.element[i] += 10;
-            for(size_t j = 1; ; j++) {
-                if(n.element[i + j] != 0) {
-                    n.element[i + j]--;
-                    break;
-                }
-                else n.element[i + j] = 9;
-            }
-        }
-        n.element[i] -= k % 10;
-        k /= 10;
-    }
-    
-    for(size_t i = n.digits - 1; i > 0; i--) {
-        if(n.element[i] == 0) {
-            n.digits--;
-        }
-        else break;
-    }
-    return n;
+    return n - BigInt(k);
 }
 
 template BigInt operator - <char>(BigInt, char);
@@ -150,6 +140,7 @@ template BigInt operator - <long>(BigInt, long);
 template BigInt operator - <unsigned long>(BigInt, unsigned long);
 template BigInt operator - <long long>(BigInt, long long);
 template BigInt operator - <unsigned long long>(BigInt, unsigned long long);
+template BigInt operator - <std::string>(BigInt, std::string);
 
 template<typename T>
 BigInt operator - (T n, BigInt k) {
@@ -166,6 +157,7 @@ template BigInt operator - <long>(long, BigInt);
 template BigInt operator - <unsigned long>(unsigned long, BigInt);
 template BigInt operator - <long long>(long long, BigInt);
 template BigInt operator - <unsigned long long>(unsigned long long, BigInt);
+template BigInt operator - <std::string>(std::string, BigInt);
 
 BigInt operator - (BigInt n, BigInt k) {
     int i, j, l, tmp, val;
@@ -230,6 +222,7 @@ template BigInt operator * <long>(BigInt, long);
 template BigInt operator * <unsigned long>(BigInt, unsigned long);
 template BigInt operator * <long long>(BigInt, long long);
 template BigInt operator * <unsigned long long>(BigInt, unsigned long long);
+template BigInt operator * <std::string>(BigInt, std::string);
 
 template<typename T>
 BigInt operator * (T n, BigInt k) {
@@ -246,6 +239,7 @@ template BigInt operator * <long>(long, BigInt);
 template BigInt operator * <unsigned long>(unsigned long, BigInt);
 template BigInt operator * <long long>(long long, BigInt);
 template BigInt operator * <unsigned long long>(unsigned long long, BigInt);
+template BigInt operator * <std::string>(std::string, BigInt);
 
 BigInt operator * (BigInt n, BigInt k) {
     if(n < k) return k * n;
@@ -316,6 +310,7 @@ template BigInt operator / <long>(BigInt, long);
 template BigInt operator / <unsigned long>(BigInt, unsigned long);
 template BigInt operator / <long long>(BigInt, long long);
 template BigInt operator / <unsigned long long>(BigInt, unsigned long long);
+template BigInt operator / <std::string>(BigInt, std::string);
 
 template<typename T>
 BigInt operator / (T n, BigInt k) {
@@ -332,6 +327,7 @@ template BigInt operator / <long>(long, BigInt);
 template BigInt operator / <unsigned long>(unsigned long, BigInt);
 template BigInt operator / <long long>(long long, BigInt);
 template BigInt operator / <unsigned long long>(unsigned long long, BigInt);
+template BigInt operator / <std::string>(std::string, BigInt);
 
 BigInt operator / (BigInt n, BigInt k) {
     if(k == 0) throw "Divide by Zero";
@@ -368,6 +364,7 @@ template BigInt operator % <long>(BigInt, long);
 template BigInt operator % <unsigned long>(BigInt, unsigned long);
 template BigInt operator % <long long>(BigInt, long long);
 template BigInt operator % <unsigned long long>(BigInt, unsigned long long);
+template BigInt operator % <std::string>(BigInt, std::string);
 
 template<typename T>
 BigInt operator % (T n, BigInt k) {
@@ -384,6 +381,7 @@ template BigInt operator % <long>(long, BigInt);
 template BigInt operator % <unsigned long>(unsigned long, BigInt);
 template BigInt operator % <long long>(long long, BigInt);
 template BigInt operator % <unsigned long long>(unsigned long long, BigInt);
+template BigInt operator % <std::string>(std::string, BigInt);
 
 BigInt operator % (BigInt n, BigInt k) {
     return n - k * (n / k);
@@ -534,6 +532,7 @@ template bool operator > <long>(BigInt, long);
 template bool operator > <unsigned long>(BigInt, unsigned long);
 template bool operator > <long long>(BigInt, long long);
 template bool operator > <unsigned long long>(BigInt, unsigned long long);
+template bool operator > <std::string>(BigInt, std::string);
 
 template<typename T>
 bool operator > (T n, BigInt k) {
@@ -550,6 +549,7 @@ template bool operator > <long>(long, BigInt);
 template bool operator > <unsigned long>(unsigned long, BigInt);
 template bool operator > <long long>(long long, BigInt);
 template bool operator > <unsigned long long>(unsigned long long, BigInt);
+template bool operator > <std::string>(std::string, BigInt);
 
 bool operator > (BigInt n, BigInt k) {
     if(n.status == Status::Plus && k.status == Status::Minus) return true;
@@ -584,6 +584,7 @@ template bool operator >= <long>(BigInt, long);
 template bool operator >= <unsigned long>(BigInt, unsigned long);
 template bool operator >= <long long>(BigInt, long long);
 template bool operator >= <unsigned long long>(BigInt, unsigned long long);
+template bool operator >= <std::string>(BigInt, std::string);
 
 template<typename T>
 bool operator >= (T n, BigInt k) {
@@ -600,6 +601,7 @@ template bool operator >= <long>(long, BigInt);
 template bool operator >= <unsigned long>(unsigned long, BigInt);
 template bool operator >= <long long>(long long, BigInt);
 template bool operator >= <unsigned long long>(unsigned long long, BigInt);
+template bool operator >= <std::string>(std::string, BigInt);
 
 bool operator >= (BigInt n, BigInt k) {
     if(n.status == Status::Plus && k.status == Status::Minus) return true;
@@ -634,6 +636,7 @@ template bool operator < <long>(BigInt, long);
 template bool operator < <unsigned long>(BigInt, unsigned long);
 template bool operator < <long long>(BigInt, long long);
 template bool operator < <unsigned long long>(BigInt, unsigned long long);
+template bool operator < <std::string>(BigInt, std::string);
 
 template<typename T>
 bool operator < (T n, BigInt k) {
@@ -650,6 +653,7 @@ template bool operator < <long>(long, BigInt);
 template bool operator < <unsigned long>(unsigned long, BigInt);
 template bool operator < <long long>(long long, BigInt);
 template bool operator < <unsigned long long>(unsigned long long, BigInt);
+template bool operator < <std::string>(std::string, BigInt);
 
 bool operator < (BigInt n, BigInt k) {
     if(n.status == Status::Plus && k.status == Status::Minus) return false;
@@ -684,6 +688,7 @@ template bool operator <= <long>(BigInt, long);
 template bool operator <= <unsigned long>(BigInt, unsigned long);
 template bool operator <= <long long>(BigInt, long long);
 template bool operator <= <unsigned long long>(BigInt, unsigned long long);
+template bool operator <= <std::string>(BigInt, std::string);
 
 template<typename T>
 bool operator <= (T n, BigInt k) {
@@ -700,6 +705,7 @@ template bool operator <= <long>(long, BigInt);
 template bool operator <= <unsigned long>(unsigned long, BigInt);
 template bool operator <= <long long>(long long, BigInt);
 template bool operator <= <unsigned long long>(unsigned long long, BigInt);
+template bool operator <= <std::string>(std::string, BigInt);
 
 bool operator <= (BigInt n, BigInt k) {
     if(n.status == Status::Plus && k.status == Status::Minus) return false;
@@ -734,6 +740,7 @@ template bool operator == <long>(BigInt, long);
 template bool operator == <unsigned long>(BigInt, unsigned long);
 template bool operator == <long long>(BigInt, long long);
 template bool operator == <unsigned long long>(BigInt, unsigned long long);
+template bool operator == <std::string>(BigInt, std::string);
 
 template<typename T>
 bool operator == (T n, BigInt k) {
@@ -750,6 +757,7 @@ template bool operator == <long>(long, BigInt);
 template bool operator == <unsigned long>(unsigned long, BigInt);
 template bool operator == <long long>(long long, BigInt);
 template bool operator == <unsigned long long>(unsigned long long, BigInt);
+template bool operator == <std::string>(std::string, BigInt);
 
 bool operator == (BigInt n, BigInt k) {
     if(n.status != k.status) return false;
@@ -775,6 +783,7 @@ template bool operator != <long>(BigInt, long);
 template bool operator != <unsigned long>(BigInt, unsigned long);
 template bool operator != <long long>(BigInt, long long);
 template bool operator != <unsigned long long>(BigInt, unsigned long long);
+template bool operator != <std::string>(BigInt, std::string);
 
 template<typename T>
 bool operator != (T n, BigInt k) {
@@ -791,6 +800,7 @@ template bool operator != <long>(long, BigInt);
 template bool operator != <unsigned long>(unsigned long, BigInt);
 template bool operator != <long long>(long long, BigInt);
 template bool operator != <unsigned long long>(unsigned long long, BigInt);
+template bool operator != <std::string>(std::string, BigInt);
 
 bool operator != (BigInt n, BigInt k) {
     if(n.status != k.status) return true;
@@ -912,7 +922,7 @@ BigInt::operator long() const {
 }
 
 BigInt::operator unsigned long() const {
-    if(*this < 0 || *this > ULONG_MAX) return 0;
+    if(*this < 0 || *this > STRING(ULONG_MAX)) return 0;
     unsigned long ul = 0, a = 1;
     for(size_t i = 0; i < this->digits; ++i) {
         ul += a * this->element[i];
@@ -932,7 +942,7 @@ BigInt::operator long long() const {
 }
 
 BigInt::operator unsigned long long() const {
-    if(*this < 0 || *this > ULLONG_MAX) return 0;
+    if(*this < 0 || *this > STRING(ULLONG_MAX)) return 0;
     unsigned long long ull = 0, a = 1;
     for(size_t i = 0; i < this->digits; ++i) {
         ull += a * this->element[i];

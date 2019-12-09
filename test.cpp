@@ -5,6 +5,7 @@
 
 template<typename T>
 void value_test(T n, T k) {
+    std::cout << BigInt("1234567890") << std::endl;
     std::cout << n << " + " << k << " = " << (n + k) << std::endl;
     std::cout << n << " - " << k << " = " << (n - k) << std::endl;
     std::cout << n << " * " << k << " = " << (n * k) << std::endl;
