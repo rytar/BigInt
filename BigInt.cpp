@@ -1,6 +1,8 @@
 #include <cmath>
+#include <limits>
 #include <climits>
 #include <string>
+#include <cfloat>
 #include "BigInt.h"
 
 #define STRING(str) #str
@@ -28,11 +30,14 @@ BigInt::BigInt(long long n) {
 }
 
 BigInt::BigInt(const std::string s) {
-    digits = s.size();
-    element.resize(digits + 50);
-    for(size_t i = 0; i < digits; ++i) {
-        if(s[digits - i - 1] == '-') status = Status::Minus;
-        else element[i] = s[digits - i - 1] - '0';
+    int itr = s.find("e");
+    size_t a = (itr != -1) ? 10 * (s[itr + 2] - '0') + s[itr + 3] - '0' : 1;
+    digits = (itr != -1) ? itr : s.size();
+    element.resize(digits + a + 50);
+    for(size_t i = 0; i < a; i++) element[i] = 0;
+    for(size_t i = a; i < digits + a; ++i) {
+        if(s[digits - i + a - 1] == '-') status = Status::Minus;
+        else element[i] = s[digits - i + a - 1] - '0';
     }
 }
 
@@ -191,7 +196,7 @@ BigInt operator - (BigInt n, BigInt k) {
 BigInt karatsuba(BigInt n, BigInt k) {
     BigInt n1 = 0, n2 = 0, k1 = 0, k2 = 0;
     BigInt B = 1;
-    size_t d = size_t(n.digits / 2);
+    size_t d = n.digits / 2;
     for(size_t i = 0; i < d; ++i) {
         n1 += B * n.element[i];
         n2 += B * n.element[i + d];
@@ -1018,7 +1023,7 @@ BigInt::operator long() const {
 }
 
 BigInt::operator unsigned long() const {
-    if(*this < 0 || *this > STRING(ULONG_MAX)) return 0;
+    if(*this < 0 || *this > BigInt(ULONG_MAX)) return 0;
     unsigned long ul = 0, a = 1;
     for(size_t i = 0; i < this->digits; ++i) {
         ul += a * this->element[i];
@@ -1038,7 +1043,7 @@ BigInt::operator long long() const {
 }
 
 BigInt::operator unsigned long long() const {
-    if(*this < 0 || *this > STRING(ULLONG_MAX)) return 0;
+    if(*this < 0 || *this > BigInt(ULLONG_MAX)) return 0;
     unsigned long long ull = 0, a = 1;
     for(size_t i = 0; i < this->digits; ++i) {
         ull += a * this->element[i];
@@ -1047,27 +1052,27 @@ BigInt::operator unsigned long long() const {
     return ull;
 }
 
-// BigInt::operator float() const {
-//     if(*this > LC_MAX || *this < LC_MIN) return 0.0;
-//     float f = 0.0;
-//     int a = 1;
-//     for(size_t i = 0; i < this->digits; ++i) {
-//         f += a * this->element[i];
-//         a *= 10;
-//     }
-//     return f;
-// }
+BigInt::operator float() const {
+    if(*this > STRING(FLT_MAX) || *this < STRING(FLT_MIN)) return 0.0;
+    float f = 0.0;
+    int a = 1;
+    for(size_t i = 0; i < this->digits; ++i) {
+        f += a * this->element[i];
+        a *= 10;
+    }
+    return f * float(this->status);
+}
 
-// BigInt::operator double() const {
-//     if(*this > TMP_MAX || *this < TMP_MAX) return 0.0;
-//     double d = 0.0;
-//     int a = 1;
-//     for(size_t i = 0; i < this->digits; ++i) {
-//         d += a * this->element[i];
-//         a *= 10;
-//     }
-//     return d;
-// }
+BigInt::operator double() const {
+    if(*this > STRING(DBL_MAX) || *this < STRING(DBL_MIN)) return 0.0;
+    double d = 0.0;
+    int a = 1;
+    for(size_t i = 0; i < this->digits; ++i) {
+        d += a * this->element[i];
+        a *= 10;
+    }
+    return d * double(this->status);
+}
 
 // その他
 
