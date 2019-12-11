@@ -17,7 +17,8 @@ private:
 
 public:
     BigInt();
-    BigInt(long long);
+    template<typename T>
+    BigInt(T);
     BigInt(const std::string);
 
     // 算術演算
@@ -133,8 +134,8 @@ public:
     operator unsigned long() const;
     operator long long() const;
     operator unsigned long long() const;
-    operator float() const;
-    operator double() const;
+    // operator float() const;
+    // operator double() const;
 
     // その他
     size_t size();

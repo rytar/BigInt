@@ -13,7 +13,8 @@ BigInt::BigInt() {
     status = Status::Plus;
 }
 
-BigInt::BigInt(long long n) {
+template<typename T>
+BigInt::BigInt(T n) {
     if(n < 0) {
         status = Status::Minus;
         n *= -1;
@@ -29,15 +30,23 @@ BigInt::BigInt(long long n) {
     element.resize(digits + 50);
 }
 
+template<>
+BigInt::BigInt(const char* c) {
+    auto s = std::string(c);
+    digits = s.size();
+    element.resize(digits + 50);
+    for(size_t i = 0; i < digits + 0; ++i) {
+        if(s[digits - i - 1] == '-') status = Status::Minus;
+        else element[i] = s[digits - i - 1] - '0';
+    }
+}
+
 BigInt::BigInt(const std::string s) {
-    int itr = s.find("e");
-    size_t a = (itr != -1) ? 10 * (s[itr + 2] - '0') + s[itr + 3] - '0' : 1;
-    digits = (itr != -1) ? itr : s.size();
-    element.resize(digits + a + 50);
-    for(size_t i = 0; i < a; i++) element[i] = 0;
-    for(size_t i = a; i < digits + a; ++i) {
-        if(s[digits - i + a - 1] == '-') status = Status::Minus;
-        else element[i] = s[digits - i + a - 1] - '0';
+    digits = s.size();
+    element.resize(digits + 50);
+    for(size_t i = 0; i < digits + 0; ++i) {
+        if(s[digits - i - 1] == '-') status = Status::Minus;
+        else element[i] = s[digits - i - 1] - '0';
     }
 }
 
@@ -550,7 +559,7 @@ BigInt BigInt::operator >> (T n) {
     if(n < 0) return *this << (-n);
     std::vector<size_t> b = this->to_binary();
     if(n < b.size()) {
-        b.erase(b.begin(), b.begin() + n);
+        b.erase(b.begin(), b.begin() + size_t(n));
         return binary_to_i(b);
     }
     return 0;
@@ -1023,7 +1032,7 @@ BigInt::operator long() const {
 }
 
 BigInt::operator unsigned long() const {
-    if(*this < 0 || *this > BigInt(ULONG_MAX)) return 0;
+    if(*this < 0 || *this > ULONG_MAX) return 0;
     unsigned long ul = 0, a = 1;
     for(size_t i = 0; i < this->digits; ++i) {
         ul += a * this->element[i];
@@ -1043,7 +1052,7 @@ BigInt::operator long long() const {
 }
 
 BigInt::operator unsigned long long() const {
-    if(*this < 0 || *this > BigInt(ULLONG_MAX)) return 0;
+    if(*this < 0 || *this > ULLONG_MAX) return 0;
     unsigned long long ull = 0, a = 1;
     for(size_t i = 0; i < this->digits; ++i) {
         ull += a * this->element[i];
@@ -1052,27 +1061,27 @@ BigInt::operator unsigned long long() const {
     return ull;
 }
 
-BigInt::operator float() const {
-    if(*this > STRING(FLT_MAX) || *this < STRING(FLT_MIN)) return 0.0;
-    float f = 0.0;
-    int a = 1;
-    for(size_t i = 0; i < this->digits; ++i) {
-        f += a * this->element[i];
-        a *= 10;
-    }
-    return f * float(this->status);
-}
+// BigInt::operator float() const {
+//     if(*this > STRING(FLT_MAX) || *this < STRING(FLT_MIN)) return 0.0;
+//     float f = 0.0;
+//     int a = 1;
+//     for(size_t i = 0; i < this->digits; ++i) {
+//         f += a * this->element[i];
+//         a *= 10;
+//     }
+//     return f * float(this->status);
+// }
 
-BigInt::operator double() const {
-    if(*this > STRING(DBL_MAX) || *this < STRING(DBL_MIN)) return 0.0;
-    double d = 0.0;
-    int a = 1;
-    for(size_t i = 0; i < this->digits; ++i) {
-        d += a * this->element[i];
-        a *= 10;
-    }
-    return d * double(this->status);
-}
+// BigInt::operator double() const {
+//     if(*this > STRING(DBL_MAX) || *this < STRING(DBL_MIN)) return 0.0;
+//     double d = 0.0;
+//     int a = 1;
+//     for(size_t i = 0; i < this->digits; ++i) {
+//         d += a * this->element[i];
+//         a *= 10;
+//     }
+//     return d * double(this->status);
+// }
 
 // その他
 
