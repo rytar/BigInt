@@ -17,8 +17,7 @@ private:
 
 public:
     BigInt();
-    template<typename T>
-    BigInt(T);
+    template<typename T> BigInt(T);
     BigInt(const std::string);
 
     // 算術演算
@@ -95,7 +94,15 @@ public:
     template<typename T>
     friend BigInt operator & (T, BigInt);
     friend BigInt operator & (BigInt, BigInt);
+    template<typename T>
+    friend BigInt operator | (BigInt, T);
+    template<typename T>
+    friend BigInt operator | (T, BigInt);
     friend BigInt operator | (BigInt, BigInt);
+    template<typename T>
+    friend BigInt operator ^ (BigInt, T);
+    template<typename T>
+    friend BigInt operator ^ (T, BigInt);
     friend BigInt operator ^ (BigInt, BigInt);
     template<typename T>
     BigInt operator << (T);
@@ -117,7 +124,7 @@ public:
     BigInt& operator >>= (const size_t);
 
     // インデックス
-    BigInt operator [] (const BigInt);
+    size_t operator [] (const size_t);
 
     // 入力・出力
     friend std::istream& operator >> (std::istream&, BigInt&);

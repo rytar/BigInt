@@ -35,10 +35,14 @@ void value_test(BigInt n, BigInt k) {
 }
 
 template<typename T>
-void time_test(T begin, T count) {
+void time_test(T a, T b) {
+    T count = 1;
     auto start = std::chrono::system_clock::now();
-    for(T i = begin; i < begin + count; ++i)
+    for(T i = a; i < b; i++) {
         std::cout << i << " * " << i << " = " << (i * i) << std::endl;
+        std::cout << i << " / " << count << " = " << (i / count) << std::endl;
+        count++;
+    }
     auto end = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>
               (end - start).count();
@@ -48,10 +52,12 @@ void time_test(T begin, T count) {
 
 template<typename T>
 void test() {
-    T n = 4;
+    T n = 16;
     auto start = std::chrono::system_clock::now();
-    for(size_t i = 0; i < 4; i++)
+    for(size_t i = 1; i < 5; i++) {
         std::cout << n << " * " << n << " = " << (n *= n) << std::endl;
+        std::cout << n << " / " << i << " = " << (n / i) << std::endl;
+    }
     auto end = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>
               (end - start).count();
@@ -61,10 +67,10 @@ void test() {
 
 int main() {
     BigInt n, k;
-    std::cout << "input: ";
-    std::cin >> n >> k;
+    // std::cout << "input: ";
+    // std::cin >> n >> k;
     // time_test(n, k);
-    value_test(n, k);
+    // value_test(n, k);
 
-    // test<int>();
+    test<BigInt>();
 }

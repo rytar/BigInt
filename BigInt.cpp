@@ -213,10 +213,8 @@ BigInt karatsuba(BigInt n, BigInt k) {
         if(i + d < k.digits) k2 += B * k.element[i + d];
         B *= 10;
     }
-    if(2 * d != n.digits) {
-        n2 += B * n.element[2 * d];
-        if(2 * d < k.digits) k2 += B * k.element[2 * d];
-    }
+    if(2 * d != n.digits) n2 += B * n.element[2 * d];
+    if(2 * d < k.digits) k2 += B * k.element[2 * d];
     return n1 * k1 + (n1 * k2 + n2 * k1) * B + n2 * k2 * B * B;
 }
 
@@ -344,22 +342,36 @@ template BigInt operator / <std::string>(std::string, BigInt);
 
 BigInt operator / (BigInt n, BigInt k) {
     if(k == 0) throw "Divide by Zero";
-    BigInt c = 1, q = 0;
-    BigInt absn = n.abs(), absk = k.abs();
-    BigInt save_k = absk;
-    while(absn >= absk) {
-        if(absn >= 2 * absk) {
-            absk *= 2;
-            c *= 2;
+    if(k == 1 || k == -1) return n * int(k.status);
+    if(n < k) return 0;
+    BigInt absn = n.abs(), absk = k.abs(), save_k = k.abs();
+    if(absn < CHAR_MAX) return char(n) / char(k);
+    if(absn < SHRT_MAX) return short(n) / short(k);
+    if(absn < INT_MAX) return int(n) / int(k);
+    if(absn < LONG_MAX) return long(n) / long(k);
+    if(absn < LLONG_MAX) return (long long)(n) / (long long)(k);
+    if(n.digits - k.digits > 6) {
+        BigInt c = 1, q = 0;
+        while(absn >= absk) {
+            if(absn >= 2 * absk) {
+                absk *= 2;
+                c *= 2;
+            }
+            else {
+                q += c;
+                c = 1;
+                absn -= absk;
+                absk = save_k;
+            }
         }
-        else {
-            q += c;
-            c = 1;
-            absn -= absk;
-            absk = save_k;
-        }
+        return q * int(n.status) * int(k.status);
     }
-    return q * int(n.status) * int(k.status);
+    BigInt count = 0;
+    while(absn >= absk) {
+        absk += save_k;
+        count++;
+    }
+    return count * int(n.status) * int(k.status);
 }
 
 template<typename T>
@@ -558,6 +570,9 @@ template<typename T>
 BigInt BigInt::operator >> (T n) {
     if(n < 0) return *this << (-n);
     std::vector<size_t> b = this->to_binary();
+    // std::cout << std::endl;
+    // for(size_t i = b.size() - 1; i >= 0; i--) std::cout << b[i];
+    // std::cout << std::endl;
     if(n < b.size()) {
         b.erase(b.begin(), b.begin() + size_t(n));
         return binary_to_i(b);
@@ -929,11 +944,9 @@ bool operator != (BigInt n, BigInt k) {
 
 // インデックス
 
-BigInt BigInt::operator [] (const BigInt n) {
+size_t BigInt::operator [] (size_t n) {
     auto itr = this->element.begin();
-    for(BigInt i = 0; i < n; i++) {
-        itr++;
-    }
+    itr += n;
     return *itr;
 }
 
