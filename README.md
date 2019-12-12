@@ -1,3 +1,3 @@
 # BigInt
 This is a library for multiple‐precision arithmetic.
-続きは後で書きます
+You can use overloaded operators dedicated to BigInt.
