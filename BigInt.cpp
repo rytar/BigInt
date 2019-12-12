@@ -366,7 +366,7 @@ BigInt operator / (BigInt n, BigInt k) {
     if(absn < INT_MAX) return int(n) / int(k);
     if(absn < LONG_MAX) return long(n) / long(k);
     if(absn < LLONG_MAX) return (long long)(n) / (long long)(k);
-    if(n.digits > 2 * k.digits + 4) return karatsuba_for_div(absn, absk) * int(n.status) * int(k.status);
+    if(n.digits > 2 * k.digits + 2) return karatsuba_for_div(absn, absk) * int(n.status) * int(k.status);
     BigInt count = 0;
     while(absn >= absk) {
         absk += save_k;
