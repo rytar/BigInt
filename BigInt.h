@@ -44,6 +44,7 @@ public:
     template<typename T>
     friend BigInt operator * (T, BigInt);
     friend BigInt operator * (BigInt, BigInt);
+    friend BigInt karatsuba_for_div(BigInt, BigInt);
     template<typename T>
     friend BigInt operator / (BigInt, T);
     template<typename T>

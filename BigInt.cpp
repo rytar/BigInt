@@ -306,6 +306,19 @@ BigInt operator * (BigInt n, BigInt k) {
     return k;
 }
 
+BigInt karatsuba_for_div(BigInt n, BigInt k) {
+    BigInt n1 = 0, n2 = 0;
+    BigInt B = 1;
+    size_t d = n.digits / 2;
+    for(size_t i = 0; i < d; ++i) {
+        n1 += B * n.element[i];
+        n2 += B * n.element[i + d];
+        B *= 10;
+    }
+    if(2 * d != n.digits) n2 += B * n.element[2 * d];
+    return n1 / k + n2 / k * B;
+}
+
 template<typename T>
 BigInt operator / (BigInt n, T k) {
     return n / BigInt(k);
@@ -350,22 +363,7 @@ BigInt operator / (BigInt n, BigInt k) {
     if(absn < INT_MAX) return int(n) / int(k);
     if(absn < LONG_MAX) return long(n) / long(k);
     if(absn < LLONG_MAX) return (long long)(n) / (long long)(k);
-    if(n.digits - k.digits > 6) {
-        BigInt c = 1, q = 0;
-        while(absn >= absk) {
-            if(absn >= 2 * absk) {
-                absk *= 2;
-                c *= 2;
-            }
-            else {
-                q += c;
-                c = 1;
-                absn -= absk;
-                absk = save_k;
-            }
-        }
-        return q * int(n.status) * int(k.status);
-    }
+    if(n.digits > 2 * k.digits + 4) return karatsuba_for_div(absn, absk) * int(n.status) * int(k.status);
     BigInt count = 0;
     while(absn >= absk) {
         absk += save_k;
