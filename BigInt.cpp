@@ -213,7 +213,7 @@ BigInt karatsuba(BigInt n, BigInt k) {
         if(i + d < k.digits) k2 += B * k.element[i + d];
         B *= 10;
     }
-    if(2 * d != n.digits) n2 += B * n.element[2 * d];
+    if(2 * d < n.digits) n2 += B * n.element[2 * d];
     if(2 * d < k.digits) k2 += B * k.element[2 * d];
     return n1 * k1 + (n1 * k2 + n2 * k1) * B + n2 * k2 * B * B;
 }
@@ -315,8 +315,9 @@ BigInt karatsuba_for_div(BigInt n, BigInt k) {
         n2 += B * n.element[i + d];
         B *= 10;
     }
-    if(2 * d != n.digits) n2 += B * n.element[2 * d];
-    return n1 / k + n2 / k * B;
+    if(2 * d < n.digits) n2 += B * n.element[2 * d];
+    BigInt q1 = n1 / k, q2 = n2 / k;
+    return q1 + q2 * B + ((n1 - k * q1) + (n2 - k * q2) * B) / k;
 }
 
 template<typename T>
