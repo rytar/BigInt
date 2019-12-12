@@ -35,6 +35,7 @@ BigInt::BigInt(const char* c) {
     auto s = std::string(c);
     digits = s.size();
     element.resize(digits + 50);
+    status = Status::Plus;
     for(size_t i = 0; i < digits + 0; ++i) {
         if(s[digits - i - 1] == '-') status = Status::Minus;
         else element[i] = s[digits - i - 1] - '0';
@@ -44,6 +45,7 @@ BigInt::BigInt(const char* c) {
 BigInt::BigInt(const std::string s) {
     digits = s.size();
     element.resize(digits + 50);
+    status = Status::Plus;
     for(size_t i = 0; i < digits + 0; ++i) {
         if(s[digits - i - 1] == '-') status = Status::Minus;
         else element[i] = s[digits - i - 1] - '0';
