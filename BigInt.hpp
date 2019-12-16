@@ -210,54 +210,103 @@ namespace Rytar {
         // 代入演算
         template<typename T>
         BigInt& operator = (const T n) {
-            *this = n;
+            *this = BigInt(n);
+            return *this;
+        }
+
+        BigInt& operator = (const BigInt n) {
+            if(this->digits < n.digits) this->element.resize(n.digits + 50);
+            this->status = n.status;
+            this->digits = n.digits;
+            for(size_t i = 0; i < n.digits; i++)
+                this->element[i] = n.element[i];
             return *this;
         }
 
         template<typename T>
         BigInt& operator += (const T n) {
+            *this = *this + BigInt(n);
+            return *this;
+        }
+
+        BigInt& operator += (const BigInt n) {
             *this = *this + n;
             return *this;
         }
 
         template<typename T>
         BigInt& operator -= (const T n) {
+            *this = *this - BigInt(n);
+            return *this;
+        }
+
+        BigInt& operator -= (const BigInt n) {
             *this = *this - n;
             return *this;
         }
 
         template<typename T>
         BigInt& operator *= (const T n) {
+            *this = *this * BigInt(n);
+            return *this;
+        }
+
+        BigInt& operator *= (const BigInt n) {
             *this = *this * n;
             return *this;
         }
 
         template<typename T>
         BigInt& operator /= (const T n) {
+            *this = *this / BigInt(n);
+            return *this;
+        }
+
+        BigInt& operator /= (const BigInt n) {
             *this = *this / n;
             return *this;
         }
 
         template<typename T>
         BigInt& operator %= (const T n) {
+            *this = *this % BigInt(n);
+            return *this;
+        }
+
+        BigInt& operator %= (const BigInt n) {
             *this = *this % n;
             return *this;
         }
 
         template<typename T>
         BigInt& operator &= (const T n) {
+            *this = *this & BigInt(n);
+            return *this;
+        }
+
+        BigInt& operator &= (const BigInt n) {
             *this = *this & n;
             return *this;
         }
         
         template<typename T>
         BigInt& operator |= (const T n) {
+            *this = *this | BigInt(n);
+            return *this;
+        }
+
+        BigInt& operator |= (const BigInt n) {
             *this = *this | n;
             return *this;
         }
 
         template<typename T>
         BigInt& operator ^= (const T n) {
+            *this = *this ^ BigInt(n);
+            return *this;
+        }
+
+        BigInt& operator ^= (const BigInt n) {
             *this = *this ^ n;
             return *this;
         }
@@ -512,7 +561,7 @@ namespace Rytar {
             k.status = Status::Plus;
         else k.status = Status::Minus;
 
-        if(k.digits == k.element.size()) k.element.resize(k.element.size() * 2);
+        k.element.resize(k.element.size() + 10);
 
         if(n.digits > 2 && k.digits > 2) {
             while(k.element[0] == 0) {
