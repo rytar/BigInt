@@ -605,21 +605,21 @@ namespace Rytar {
 
         k.element.resize(k.element.size() + 10);
 
-        // if(n.digits > 2 && k.digits > 2) {
-        //     size_t count;
-        //     for(count = 0; k.element[count] == 0; count++);
-        //     std::vector<size_t> add(count, 0);
-        //     n.element.insert(n.element.begin(), add.begin(), add.end());
-        //     k.element.erase(k.element.begin(), k.element.begin() + count);
-        //     n.digits += count;
-        //     k.digits -= count;
+        if(n.digits / 2 < k.digits && n.digits > 4) {
+            size_t count;
+            for(count = 0; k.element[count] == 0; count++);
+            std::vector<size_t> add(count, 0);
+            n.element.insert(n.element.begin(), add.begin(), add.end());
+            k.element.erase(k.element.begin(), k.element.begin() + count);
+            n.digits += count;
+            k.digits -= count;
             
-        //     if(k.digits > 2) {
-        //         mul[p] = BigInt::karatsuba(n, k);
-        //         return mul[p];
-        //     }
-        //     else return n * k;
-        // }
+            if(k.digits > 2) {
+                mul[p] = BigInt::karatsuba(n, k);
+                return mul[p];
+            }
+            else return n * k;
+        }
 
         for(i = 0; i < k.digits; i++)
             k.element[i] = 0;
