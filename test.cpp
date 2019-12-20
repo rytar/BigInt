@@ -52,11 +52,13 @@ void time_test(T a, T b) {
 template<typename T>
 void time_test() {
     std::mt19937 mt;
-    T a, b;
-    a = mt();
+    T a = mt(), b;
     auto start = std::chrono::system_clock::now();
     for(T i = 1; i < 100000; i++) {
-        b = a + i; b = a - i; b = a * i; b = a / i;
+        b = a + i;
+        b = a - i;
+        b = a * i;
+        b = a / i;
     }
     auto end = std::chrono::system_clock::now();
     auto dur = std::chrono::duration_cast<std::chrono::nanoseconds>

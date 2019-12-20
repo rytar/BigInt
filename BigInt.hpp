@@ -7,6 +7,8 @@
 #include <cmath>
 #include <climits>
 #include <cfloat>
+#include <unordered_map>
+#include <utility>
 
 namespace Rytar {
 
@@ -20,18 +22,29 @@ namespace Rytar {
         size_t digits;
         Status status;
 
+
     public:
+    
         BigInt() {
             element.resize(50);
+            element[0] = 0;
             digits = 1;
             status = Status::Plus;
         }
 
         template<typename T>
         BigInt(T n) {
+            if(n == 0) {
+                element.resize(50);
+                element[0] = 0;
+                digits = 1;
+                status = Status::Plus;
+                return;
+            }
+
             if(n < 0) {
                 status = Status::Minus;
-                n *= -1;
+                n = -n;
             }
             else status = Status::Plus;
 
@@ -334,7 +347,7 @@ namespace Rytar {
 
         // キャスト
         char to_char() const {
-            if(*this > CHAR_MAX || *this < CHAR_MIN) return 0;
+            if(*this > CHAR_MAX || *this < CHAR_MIN + 1) return 0;
             char c = 0, a = 1;
             for(size_t i = 0; i < this->digits; ++i) {
                 c += a * this->element[i];
@@ -354,7 +367,7 @@ namespace Rytar {
         }
 
         short to_short() const {
-            if(*this > SHRT_MAX || *this < SHRT_MIN) return 0;
+            if(*this > SHRT_MAX || *this < SHRT_MIN + 1) return 0;
             short s = 0, a = 1;
             for(size_t i = 0; i < this->digits; ++i) {
                 s += a * this->element[i];
@@ -374,7 +387,7 @@ namespace Rytar {
         }
 
         int to_int() const {
-            if(*this > INT_MAX || *this < INT_MIN) return 0;
+            if(*this > INT_MAX || *this < INT_MIN + 1) return 0;
             int i = 0, a = 1;
             for(size_t j = 0; j < this->digits; ++j) {
                 i += a * this->element[j];
@@ -394,7 +407,7 @@ namespace Rytar {
         }
 
         long to_long() const {
-            if(*this > LONG_MAX || *this < LONG_MIN) return 0;
+            if(*this > LONG_MAX || *this < LONG_MIN + 1) return 0;
             long l = 0, a = 1;
             for(size_t i = 0; i < this->digits; ++i) {
                 l += a * this->element[i];
@@ -414,7 +427,7 @@ namespace Rytar {
         }
 
         long long to_long_long() const {
-            if(*this > LLONG_MAX || *this < LLONG_MIN) return 0;
+            if(*this > LLONG_MAX || *this < LLONG_MIN + 1) return 0;
             long long ll = 0, a = 1;
             for(size_t i = 0; i < this->digits; ++i) {
                 ll += a * this->element[i];
@@ -433,19 +446,33 @@ namespace Rytar {
             return ull;
         }
 
+        std::string to_string() const {
+            std::string s(this->digits, 'a');
+            for(size_t i = 0; i < this->digits; i++) {
+                s[this->digits - i - 1] = this->element[i] + '0';
+            }
+            return s;
+        }
+
         // その他
         size_t size() {
             return digits;
         }
 
         BigInt abs() {
-            return *this * int(this->status);
+            BigInt n = *this;
+            if(n.status == Status::Minus) n.status = Status::Plus;
+            return n;
         }
 
         std::vector<size_t> to_binary() {
             std::vector<size_t> binary;
+            if(*this == 0) {
+                binary.push_back(0);
+                return binary;
+            }
             BigInt n = *this;
-            while(n > 0) {
+            while(n != 0) {
                 binary.push_back((n % 2).to_unsigned_int());
                 n /= 2;
             }
@@ -485,6 +512,10 @@ namespace Rytar {
             return n - k;
         }
 
+        static std::unordered_map<std::string, BigInt> add;
+        std::string p = n.to_string() + "+" + k.to_string();
+        if(add[p] != 0) return add[p];
+
         for(i = 0; i < k.digits; i++) {
             n.element[i] += k.element[i];
         }
@@ -498,6 +529,7 @@ namespace Rytar {
             n.element[i + 1] += n.element[i] / 10;
             n.element[i] %= 10;
         }
+        add[p] = n;
         return n;
     }
 
@@ -518,6 +550,10 @@ namespace Rytar {
             k.status = Status::Plus;
             return n + k;
         }
+        static std::unordered_map<std::string, BigInt> sub;
+        std::string p = n.to_string() + "-" + k.to_string();
+        if(sub[p] != 0) return sub[p];
+
         for(i = 0; i < k.digits; i++) {
             if(n.element[i] < k.element[i]) {
                 n.element[i] += 10;
@@ -538,6 +574,7 @@ namespace Rytar {
             }
             else break;
         }
+        sub[p] = n;
         return n;
     }
 
@@ -554,6 +591,11 @@ namespace Rytar {
     BigInt operator * (BigInt n, BigInt k) {
         if(n < k) return k * n;
         if(n == 0 || k == 0) return 0;
+
+        static std::unordered_map<std::string, BigInt> mul;
+        std::string p = n.to_string() + "*" + k.to_string();
+        if(mul[p] != 0) return mul[p];
+
         size_t i, j;
         BigInt tmp = k;
 
@@ -563,16 +605,21 @@ namespace Rytar {
 
         k.element.resize(k.element.size() + 10);
 
-        if(n.digits > 2 && k.digits > 2) {
-            while(k.element[0] == 0) {
-                k.element.erase(k.element.begin());
-                n.element.insert(n.element.begin(), 0);
-                k.digits--;
-                n.digits++;
-            }
-            if(k.digits > 2) return BigInt::karatsuba(n, k);
-            else return n * k;
-        }
+        // if(n.digits > 2 && k.digits > 2) {
+        //     size_t count;
+        //     for(count = 0; k.element[count] == 0; count++);
+        //     std::vector<size_t> add(count, 0);
+        //     n.element.insert(n.element.begin(), add.begin(), add.end());
+        //     k.element.erase(k.element.begin(), k.element.begin() + count);
+        //     n.digits += count;
+        //     k.digits -= count;
+            
+        //     if(k.digits > 2) {
+        //         mul[p] = BigInt::karatsuba(n, k);
+        //         return mul[p];
+        //     }
+        //     else return n * k;
+        // }
 
         for(i = 0; i < k.digits; i++)
             k.element[i] = 0;
@@ -599,6 +646,7 @@ namespace Rytar {
             k.element[i + 1] += k.element[i] / 10;
             k.element[i] %= 10;
         }
+        mul[p] = k;
         return k;
     }
 
@@ -615,20 +663,50 @@ namespace Rytar {
     BigInt operator / (BigInt n, BigInt k) {
         if(k == 0) throw "Divide by Zero";
         if(k == 1 || k == -1) return n * int(k.status);
+        if(n < 0) return -(-n / k);
+        if(k < 0) return -(n / -k);
         if(n < k) return 0;
-        BigInt absn = n.abs(), absk = k.abs(), save_k = k.abs();
-        if(absn < CHAR_MAX) return n.to_char() / k.to_char();
-        if(absn < SHRT_MAX) return n.to_short() / k.to_short();
-        if(absn < INT_MAX) return n.to_int() / k.to_int();
-        if(absn < LONG_MAX) return n.to_long() / k.to_long();
-        if(absn < LLONG_MAX) return n.to_long_long() / k.to_long_long();
-        if(n.digits > 2 * k.digits + 2) return BigInt::karatsuba_for_div(absn, absk) * int(n.status) * int(k.status);
-        BigInt count = 0;
-        while(absn >= absk) {
-            absk += save_k;
-            count++;
+        static std::unordered_map<std::string, BigInt> div;
+        std::string p = n.to_string() + "/" + k.to_string();
+        if(div[p] != 0) return div[p];
+        if(n < CHAR_MAX) {
+            div[p] = n.to_char() / k.to_char();
+            return div[p];
         }
-        return count * int(n.status) * int(k.status);
+        if(n < SHRT_MAX) {
+            div[p] = n.to_short() / k.to_short();
+            return div[p];
+        }
+        if(n < INT_MAX) {
+            div[p] = n.to_int() / k.to_int();
+            return div[p];
+        }
+        if(n < LONG_MAX) {
+            div[p] = n.to_long() / k.to_long();
+            return div[p];
+        }
+        if(n < LLONG_MAX) {
+            div[p] = n.to_long_long() / k.to_long_long();
+            return div[p];
+        }
+        if(n.digits > 2 * k.digits + 2) {
+            div[p] = BigInt::karatsuba_for_div(n, k);
+            return div[p];
+        }
+        BigInt q = 0, add = 0, next = 1;
+        while(n - q < k) {
+            if(k * (q + next) <= 0) {
+                add = next;
+                next *= k;
+            }
+            else {
+                q += add;
+                add = 0;
+                next = 1;
+            }
+        }
+        div[p] = q;
+        return q;
     }
 
     template<typename T>
@@ -642,7 +720,11 @@ namespace Rytar {
     }
 
     BigInt operator % (BigInt n, BigInt k) {
-        return n - k * (n / k);
+        static std::unordered_map<std::string, BigInt> mod;
+        std::string p = n.to_string() + "%" + k.to_string();
+        if(mod[p] != 0) return mod[p];
+        mod[p] = n - k * (n / k);
+        return mod[p];
     }
 
     // 関係演算
@@ -657,6 +739,7 @@ namespace Rytar {
     }
 
     bool operator > (BigInt n, BigInt k) {
+        if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status == Status::Plus && k.status == Status::Minus) return true;
         if(n.status == Status::Minus && k.status == Status::Plus) return false;
 
@@ -685,6 +768,7 @@ namespace Rytar {
     }
 
     bool operator >= (BigInt n, BigInt k) {
+        if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status == Status::Plus && k.status == Status::Minus) return true;
         if(n.status == Status::Minus && k.status == Status::Plus) return false;
 
@@ -713,6 +797,7 @@ namespace Rytar {
     }
 
     bool operator < (BigInt n, BigInt k) {
+        if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status == Status::Plus && k.status == Status::Minus) return false;
         if(n.status == Status::Minus && k.status == Status::Plus) return true;
 
@@ -741,6 +826,7 @@ namespace Rytar {
     }
 
     bool operator <= (BigInt n, BigInt k) {
+        if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status == Status::Plus && k.status == Status::Minus) return false;
         if(n.status == Status::Minus && k.status == Status::Plus) return true;
 
@@ -769,6 +855,7 @@ namespace Rytar {
     }
 
     bool operator == (BigInt n, BigInt k) {
+        if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status != k.status) return false;
         if(n.digits != k.digits) return false;
         for(size_t i = 0; i < n.digits; i++) {
@@ -788,6 +875,7 @@ namespace Rytar {
     }
 
     bool operator != (BigInt n, BigInt k) {
+        if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status != k.status) return true;
         if(n.digits != k.digits) return true;
         for(size_t i = 0; i < n.digits; i++) {
