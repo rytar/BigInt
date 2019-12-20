@@ -38,7 +38,7 @@ void time_test(T a, T b) {
     T count = 1;
     auto start = std::chrono::system_clock::now();
     for(T i = a; i < b; i++) {
-        // std::cout << i << " * " << i << " = " << (i * i) << std::endl;
+        std::cout << i << " * " << i << " = " << (i * i) << std::endl;
         std::cout << i << " / " << count << " = " << (i / count) << std::endl;
         count++;
     }
@@ -54,7 +54,7 @@ void time_test() {
     std::mt19937 mt;
     T a = mt(), b;
     auto start = std::chrono::system_clock::now();
-    for(T i = 1; i < 100000; i++) {
+    for(T i = 1000001; i <= 1100000; i++) {
         b = a + i;
         b = a - i;
         b = a * i;
@@ -83,11 +83,12 @@ void test() {
 
 
 int main() {
-    // Rytar::BigInt n, k;
+    // unsigned long long n, k;
     // std::cout << "input: ";
     // std::cin >> n >> k;
     time_test<Rytar::BigInt>();
     // value_test(n, k);
+    // time_test(n, k);
 
     // test<Rytar::BigInt>();
 }
