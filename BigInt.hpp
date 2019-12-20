@@ -62,7 +62,10 @@ namespace Rytar {
             element.resize(digits + 50);
             status = Status::Plus;
             for(size_t i = 0; i < digits + 0; ++i) {
-                if(s[digits - i - 1] == '-') status = Status::Minus;
+                if(s[digits - i - 1] == '-') {
+                    digits--;
+                    status = Status::Minus;
+                }
                 else element[i] = s[digits - i - 1] - '0';
             }
         }
@@ -71,8 +74,11 @@ namespace Rytar {
             digits = s.size();
             element.resize(digits + 50);
             status = Status::Plus;
-            for(size_t i = 0; i < digits + 0; ++i) {
-                if(s[digits - i - 1] == '-') status = Status::Minus;
+            for(size_t i = 0; i < digits; ++i) {
+                if(s[digits - i - 1] == '-') {
+                    digits--;
+                    status = Status::Minus;
+                }
                 else element[i] = s[digits - i - 1] - '0';
             }
         }
@@ -513,23 +519,25 @@ namespace Rytar {
 
         static std::unordered_map<std::string, BigInt> add;
         std::string p = n.to_string() + "+" + k.to_string();
-        if(add[p] != 0) return add[p];
-
-        for(i = 0; i < k.digits; i++) {
-            n.element[i] += k.element[i];
+        try {
+            return add.at(p);
         }
-        for(i = 0; i < n.digits; i++) {
-            if(i + 1 == n.element.size())
-                n.element.resize(n.element.size() * 2);
+        catch(std::out_of_range) {
+            for(i = 0; i < k.digits; i++) {
+                n.element[i] += k.element[i];
+            }
+            for(i = 0; i < n.digits; i++) {
+                if(i + 1 == n.element.size())
+                    n.element.resize(n.element.size() * 2);
 
-            if(i == n.digits - 1 && n.element[i] > 9)
-                n.digits++;
+                if(i == n.digits - 1 && n.element[i] > 9)
+                    n.digits++;
 
-            n.element[i + 1] += n.element[i] / 10;
-            n.element[i] %= 10;
+                n.element[i + 1] += n.element[i] / 10;
+                n.element[i] %= 10;
+            }
+            return (add[p] = n);
         }
-        add[p] = n;
-        return n;
     }
 
     template<typename T>
@@ -551,30 +559,32 @@ namespace Rytar {
         }
         static std::unordered_map<std::string, BigInt> sub;
         std::string p = n.to_string() + "-" + k.to_string();
-        if(sub[p] != 0) return sub[p];
-
-        for(i = 0; i < k.digits; i++) {
-            if(n.element[i] < k.element[i]) {
-                n.element[i] += 10;
-                for(j = 1; ; j++) {
-                    if(n.element[i + j] != 0) {
-                        n.element[i + j]--;
-                        break;
+        try {
+            return sub.at(p);
+        }
+        catch(std::out_of_range) {
+            for(i = 0; i < k.digits; i++) {
+                if(n.element[i] < k.element[i]) {
+                    n.element[i] += 10;
+                    for(j = 1; ; j++) {
+                        if(n.element[i + j] != 0) {
+                            n.element[i + j]--;
+                            break;
+                        }
+                        else n.element[i + j] = 9;
                     }
-                    else n.element[i + j] = 9;
                 }
+                n.element[i] -= k.element[i];
             }
-            n.element[i] -= k.element[i];
-        }
-        
-        for(i = n.digits - 1; i > 0; i--) {
-            if(n.element[i] == 0) {
-                n.digits--;
+            
+            for(i = n.digits - 1; i > 0; i--) {
+                if(n.element[i] == 0) {
+                    n.digits--;
+                }
+                else break;
             }
-            else break;
+            return (sub[p] = n);
         }
-        sub[p] = n;
-        return n;
     }
 
     template<typename T>
@@ -595,83 +605,69 @@ namespace Rytar {
 
         static std::unordered_map<std::string, BigInt> mul;
         std::string p = n.to_string() + "*" + k.to_string();
-        if(mul[p] != 0) return mul[p];
-
-        size_t digits_sum = n.digits + k.digits;
-        auto max = std::pow(10, digits_sum);
-        if(max < CHAR_MAX) {
-            mul[p] = n.to_char() * k.to_char();
-            return mul[p];
+        try {
+            return mul.at(p);
         }
-        if(max < SHRT_MAX) {
-            mul[p] = n.to_short() * k.to_short();
-            return mul[p];
-        }
-        if(max < INT_MAX) {
-            mul[p] = n.to_int() * k.to_int();
-            return mul[p];
-        }
-        if(max < LONG_MAX) {
-            mul[p] = n.to_long() * k.to_long();
-            return mul[p];
-        }
-        if(max < LLONG_MAX) {
-            mul[p] = n.to_long_long() * k.to_long_long();
-            return mul[p];
-        }
+        catch(std::out_of_range) {
+            size_t digits_sum = n.digits + k.digits;
+            auto max = std::pow(10, digits_sum);
+            if(max < CHAR_MAX) return (mul[p] = n.to_char() * k.to_char());
+            if(max < SHRT_MAX) return (mul[p] = n.to_short() * k.to_short());
+            if(max < INT_MAX) return (mul[p] = n.to_int() * k.to_int());
+            if(max < LONG_MAX) return (mul[p] = n.to_long() * k.to_long());
+            if(max < LLONG_MAX) return (mul[p] = n.to_long_long() * k.to_long_long());
 
-        size_t i, j;
-        BigInt tmp = k;
+            size_t i, j;
+            BigInt tmp = k;
 
-        if(n.status == k.status)
-            k.status = Status::Plus;
-        else k.status = Status::Minus;
+            if(n.status == k.status)
+                k.status = Status::Plus;
+            else k.status = Status::Minus;
 
-        k.element.resize(k.element.size() + 10);
+            k.element.resize(k.element.size() + 10);
 
-        if(n.digits / 2 < k.digits && n.digits > 4) {
-            size_t count;
-            for(count = 0; k.element[count] == 0; count++);
-            std::vector<size_t> add(count, 0);
-            n.element.insert(n.element.begin(), add.begin(), add.end());
-            k.element.erase(k.element.begin(), k.element.begin() + count);
-            n.digits += count;
-            k.digits -= count;
-            
-            if(k.digits > 2) {
-                mul[p] = BigInt::karatsuba(n, k);
-                return mul[p];
+            if(n.digits / 2 < k.digits && n.digits > 4) {
+                size_t count;
+                for(count = 0; k.element[count] == 0; count++);
+                std::vector<size_t> add(count, 0);
+                n.element.insert(n.element.begin(), add.begin(), add.end());
+                k.element.erase(k.element.begin(), k.element.begin() + count);
+                n.digits += count;
+                k.digits -= count;
+                
+                if(k.digits > 2) {
+                    return (mul[p] = BigInt::karatsuba(n, k));
+                }
+                else return n * k;
             }
-            else return n * k;
-        }
 
-        for(i = 0; i < k.digits; i++)
-            k.element[i] = 0;
-        
-        for(i = 0; i < tmp.digits; i++) {
-            for(j = 0; j < n.digits; j++) {
-                if(i + j == k.element.size())
+            for(i = 0; i < k.digits; i++)
+                k.element[i] = 0;
+            
+            for(i = 0; i < tmp.digits; i++) {
+                for(j = 0; j < n.digits; j++) {
+                    if(i + j == k.element.size())
+                        k.element.resize(k.element.size() * 2);
+                    
+                    if(i + j + 1 > k.digits)
+                        k.digits = i + j + 1;
+
+                    k.element[i + j] += tmp.element[i] * n.element[j];
+                }
+            }
+
+            for(i = 0; i < k.digits; i++) {
+                if(i + 1 == k.element.size())
                     k.element.resize(k.element.size() * 2);
                 
-                if(i + j + 1 > k.digits)
-                    k.digits = i + j + 1;
-
-                k.element[i + j] += tmp.element[i] * n.element[j];
+                if(i == k.digits - 1 && k.element[i] > 9)
+                    k.digits++;
+                
+                k.element[i + 1] += k.element[i] / 10;
+                k.element[i] %= 10;
             }
+            return (mul[p] = k);
         }
-
-        for(i = 0; i < k.digits; i++) {
-            if(i + 1 == k.element.size())
-                k.element.resize(k.element.size() * 2);
-            
-            if(i == k.digits - 1 && k.element[i] > 9)
-                k.digits++;
-            
-            k.element[i + 1] += k.element[i] / 10;
-            k.element[i] %= 10;
-        }
-        mul[p] = k;
-        return k;
     }
 
     template<typename T>
@@ -693,45 +689,32 @@ namespace Rytar {
         if(n == k) return 1;
         static std::unordered_map<std::string, BigInt> div;
         std::string p = n.to_string() + "/" + k.to_string();
-        if(div[p] != 0) return div[p];
-        if(n < CHAR_MAX) {
-            div[p] = n.to_char() / k.to_char();
+        try {
             return div[p];
         }
-        if(n < SHRT_MAX) {
-            div[p] = n.to_short() / k.to_short();
-            return div[p];
-        }
-        if(n < INT_MAX) {
-            div[p] = n.to_int() / k.to_int();
-            return div[p];
-        }
-        if(n < LONG_MAX) {
-            div[p] = n.to_long() / k.to_long();
-            return div[p];
-        }
-        if(n < LLONG_MAX) {
-            div[p] = n.to_long_long() / k.to_long_long();
-            return div[p];
-        }
-        if(n.digits > 2 * k.digits + 2) {
-            div[p] = BigInt::karatsuba_for_div(n, k);
-            return div[p];
-        }
-        BigInt q = 0, add = 0, next = 1;
-        while(n - q < k) {
-            if(k * (q + next) <= 0) {
-                add = next;
-                next *= k;
+        catch(std::out_of_range) {
+            if(n < CHAR_MAX) return (div[p] = n.to_char() / k.to_char());
+            if(n < SHRT_MAX) return (div[p] = n.to_short() / k.to_short());
+            if(n < INT_MAX)  return (div[p] = n.to_int() / k.to_int());
+            if(n < LONG_MAX) return (div[p] = n.to_long() / k.to_long());
+            if(n < LLONG_MAX) return (div[p] = n.to_long_long() / k.to_long_long());
+            if(n.digits > 2 * k.digits + 2) {
+                return (div[p] = BigInt::karatsuba_for_div(n, k));
             }
-            else {
-                q += add;
-                add = 0;
-                next = 1;
+            BigInt q = 0, add = 0, next = 1;
+            while(n - q < k) {
+                if(k * (q + next) <= 0) {
+                    add = next;
+                    next *= k;
+                }
+                else {
+                    q += add;
+                    add = 0;
+                    next = 1;
+                }
             }
+            return (div[p] = q);
         }
-        div[p] = q;
-        return q;
     }
 
     template<typename T>
@@ -745,11 +728,15 @@ namespace Rytar {
     }
 
     BigInt operator % (BigInt n, BigInt k) {
+        if(n < k) return n;
         static std::unordered_map<std::string, BigInt> mod;
         std::string p = n.to_string() + "%" + k.to_string();
-        if(mod[p] != 0) return mod[p];
-        mod[p] = n - k * (n / k);
-        return mod[p];
+        try {
+            return mod.at(p);
+        }
+        catch(std::out_of_range) {
+            return (mod[p] = n - k * (n / k));
+        }
     }
 
     // 関係演算
@@ -769,18 +756,25 @@ namespace Rytar {
         if(n.status == Status::Minus && k.status == Status::Plus) return false;
         if(n == k) return false;
 
-        bool flag = true;
-        if(n.status == Status::Minus) flag = false;
-
-        if(n.digits > k.digits) return flag;
-        if(n.digits < k.digits) return !flag;
-
-        size_t i;
-        for(i = n.digits - 1; i >= 0; i--) {
-            if(n.element[i] > k.element[i]) return flag;
-            if(n.element[i] < k.element[i]) return !flag;
+        static std::unordered_map<std::string, bool> gt;
+        std::string p = n.to_string() + ">" + k.to_string();
+        try {
+            return gt.at(p);
         }
-        return false;
+        catch(std::out_of_range) {
+            gt[p] = true;
+            if(n.status == Status::Minus) gt[p] = false;
+
+            if(n.digits > k.digits) return gt[p];
+            if(n.digits < k.digits) return (gt[p] = !gt[p]);
+
+            size_t i;
+            for(i = n.digits - 1; i >= 0; i--) {
+                if(n.element[i] > k.element[i]) return gt[p];
+                if(n.element[i] < k.element[i]) return (gt[p] = !gt[p]);
+            }
+            return (gt[p] = false);
+        }
     }
 
     template<typename T>
@@ -799,18 +793,25 @@ namespace Rytar {
         if(n.status == Status::Minus && k.status == Status::Plus) return false;
         if(n == k) return true;
 
-        bool flag = true;
-        if(n.status == Status::Minus) flag = false;
-
-        if(n.digits > k.digits) return flag;
-        if(n.digits < k.digits) return !flag;
-
-        size_t i;
-        for(i = n.digits - 1; i >= 0; i--) {
-            if(n.element[i] > k.element[i]) return flag;
-            if(n.element[i] < k.element[i]) return !flag;
+        static std::unordered_map<std::string, bool> gte;
+        std::string p = n.to_string() + ">=" + k.to_string();
+        try {
+            return gte.at(p);
         }
-        return true;
+        catch(std::out_of_range) {
+            gte[p] = true;
+            if(n.status == Status::Minus) gte[p] = false;
+
+            if(n.digits > k.digits) return gte[p];
+            if(n.digits < k.digits) return (gte[p] = !gte[p]);
+
+            size_t i;
+            for(i = n.digits - 1; i >= 0; i--) {
+                if(n.element[i] > k.element[i]) return gte[p];
+                if(n.element[i] < k.element[i]) return (gte[p] = !gte[p]);
+            }
+            return (gte[p] = true);
+        }
     }
 
     template<typename T>
@@ -829,18 +830,25 @@ namespace Rytar {
         if(n.status == Status::Minus && k.status == Status::Plus) return true;
         if(n == k) return false;
 
-        bool flag = true;
-        if(n.status == Status::Minus) flag = false;
-
-        if(n.digits < k.digits) return flag;
-        if(n.digits > k.digits) return !flag;
-
-        size_t i;
-        for(i = n.digits - 1; i >= 0; i--) {
-            if(n.element[i] < k.element[i]) return flag;
-            if(n.element[i] > k.element[i]) return !flag;
+        static std::unordered_map<std::string, bool> lt;
+        std::string p = n.to_string() + "<" + k.to_string();
+        try {
+            return lt.at(p);
         }
-        return false;
+        catch(std::out_of_range) {
+            lt[p] = true;
+            if(n.status == Status::Minus) lt[p] = false;
+
+            if(n.digits < k.digits) return lt[p];
+            if(n.digits > k.digits) return (lt[p] = !lt[p]);
+
+            size_t i;
+            for(i = n.digits - 1; i >= 0; i--) {
+                if(n.element[i] < k.element[i]) return lt[p];
+                if(n.element[i] > k.element[i]) return (lt[p] = !lt[p]);
+            }
+            return (lt[p] = false);
+        }
     }
 
     template<typename T>
@@ -859,18 +867,25 @@ namespace Rytar {
         if(n.status == Status::Minus && k.status == Status::Plus) return true;
         if(n == k) return true;
 
-        bool flag = true;
-        if(n.status == Status::Minus) flag = false;
-
-        if(n.digits < k.digits) return flag;
-        if(n.digits > k.digits) return !flag;
-
-        size_t i;
-        for(i = n.digits - 1; i >= 0; i--) {
-            if(n.element[i] < k.element[i]) return flag;
-            if(n.element[i] > k.element[i]) return !flag;
+        static std::unordered_map<std::string, bool> lte;
+        std::string p = n.to_string() + "<=" + k.to_string();
+        try {
+            return lte.at(p);
         }
-        return true;
+        catch(std::out_of_range) {
+            lte[p] = true;
+            if(n.status == Status::Minus) lte[p] = false;
+
+            if(n.digits < k.digits) return lte[p];
+            if(n.digits > k.digits) return (lte[p] = !lte[p]);
+
+            size_t i;
+            for(i = n.digits - 1; i >= 0; i--) {
+                if(n.element[i] < k.element[i]) return lte[p];
+                if(n.element[i] > k.element[i]) return (lte[p] = !lte[p]);
+            }
+            return (lte[p] = true);
+        }
     }
 
     template<typename T>
@@ -887,10 +902,17 @@ namespace Rytar {
         if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status != k.status) return false;
         if(n.digits != k.digits) return false;
-        for(size_t i = 0; i < n.digits; i++) {
-            if(n.element[i] != k.element[i]) return false;
+        static std::unordered_map<std::string, bool> eql;
+        std::string p = n.to_string() + "==" + k.to_string();
+        try {
+            return eql.at(p);
         }
-        return true;
+        catch(std::out_of_range) {
+            for(size_t i = 0; i < n.digits; i++) {
+                if(n.element[i] != k.element[i]) return (eql[p] = false);
+            }
+            return (eql[p] = true);
+        }
     }
 
     template<typename T>
@@ -907,10 +929,17 @@ namespace Rytar {
         if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status != k.status) return true;
         if(n.digits != k.digits) return true;
-        for(size_t i = 0; i < n.digits; i++) {
-            if(n.element[i] != k.element[i]) return true;
+        static std::unordered_map<std::string, bool> neq;
+        std::string p = n.to_string() + "==" + k.to_string();
+        try {
+            return neq.at(p);
         }
-        return false;
+        catch(std::out_of_range) {
+            for(size_t i = 0; i < n.digits; i++) {
+                if(n.element[i] != k.element[i]) return (neq[p] = true);
+            }
+            return (neq[p] = false);
+        }
     }
 
     // 論理演算
@@ -984,7 +1013,8 @@ namespace Rytar {
 
     BigInt BigInt::operator << (size_t n) {
         if(n < 0) return *this >> (-n);
-        std::vector<size_t> b = this->to_binary();
+        BigInt abs = this->abs();
+        std::vector<size_t> b = abs.to_binary();
         for(size_t i = 0; i < n; ++i) {
             b.insert(b.begin(), 0);
         }
@@ -1009,7 +1039,10 @@ namespace Rytar {
         n.digits = s.size();
         n.element.resize(n.digits + 50);
         for(size_t i = 0; i < n.digits; ++i) {
-            if(s[n.digits - i - 1] == '-') n.status = Status::Minus;
+            if(s[n.digits - i - 1] == '-') {
+                n.digits--;
+                n.status = Status::Minus;
+            }
             else n.element[i] = s[n.digits - i - 1] - '0';
         }
         return in;
