@@ -24,7 +24,6 @@ namespace Rytar {
 
 
     public:
-    
         BigInt() {
             element.resize(50);
             element[0] = 0;
@@ -591,10 +590,35 @@ namespace Rytar {
     BigInt operator * (BigInt n, BigInt k) {
         if(n < k) return k * n;
         if(n == 0 || k == 0) return 0;
+        if(n == 1) return k;
+        if(k == 1) return n;
 
         static std::unordered_map<std::string, BigInt> mul;
         std::string p = n.to_string() + "*" + k.to_string();
         if(mul[p] != 0) return mul[p];
+
+        size_t digits_sum = n.digits + k.digits;
+        auto max = std::pow(10, digits_sum);
+        if(max < CHAR_MAX) {
+            mul[p] = n.to_char() * k.to_char();
+            return mul[p];
+        }
+        if(max < SHRT_MAX) {
+            mul[p] = n.to_short() * k.to_short();
+            return mul[p];
+        }
+        if(max < INT_MAX) {
+            mul[p] = n.to_int() * k.to_int();
+            return mul[p];
+        }
+        if(max < LONG_MAX) {
+            mul[p] = n.to_long() * k.to_long();
+            return mul[p];
+        }
+        if(max < LLONG_MAX) {
+            mul[p] = n.to_long_long() * k.to_long_long();
+            return mul[p];
+        }
 
         size_t i, j;
         BigInt tmp = k;
@@ -666,6 +690,7 @@ namespace Rytar {
         if(n < 0) return -(-n / k);
         if(k < 0) return -(n / -k);
         if(n < k) return 0;
+        if(n == k) return 1;
         static std::unordered_map<std::string, BigInt> div;
         std::string p = n.to_string() + "/" + k.to_string();
         if(div[p] != 0) return div[p];
@@ -742,6 +767,7 @@ namespace Rytar {
         if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status == Status::Plus && k.status == Status::Minus) return true;
         if(n.status == Status::Minus && k.status == Status::Plus) return false;
+        if(n == k) return false;
 
         bool flag = true;
         if(n.status == Status::Minus) flag = false;
@@ -771,6 +797,7 @@ namespace Rytar {
         if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status == Status::Plus && k.status == Status::Minus) return true;
         if(n.status == Status::Minus && k.status == Status::Plus) return false;
+        if(n == k) return true;
 
         bool flag = true;
         if(n.status == Status::Minus) flag = false;
@@ -800,6 +827,7 @@ namespace Rytar {
         if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status == Status::Plus && k.status == Status::Minus) return false;
         if(n.status == Status::Minus && k.status == Status::Plus) return true;
+        if(n == k) return false;
 
         bool flag = true;
         if(n.status == Status::Minus) flag = false;
@@ -829,6 +857,7 @@ namespace Rytar {
         if(n.digits == 0 || k.digits == 0) std::cerr << "digits 0 error" << std::endl;
         if(n.status == Status::Plus && k.status == Status::Minus) return false;
         if(n.status == Status::Minus && k.status == Status::Plus) return true;
+        if(n == k) return true;
 
         bool flag = true;
         if(n.status == Status::Minus) flag = false;
