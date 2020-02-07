@@ -124,7 +124,7 @@ namespace Rytar {
         friend BigInt operator - (BigInt, BigInt);
         
         static BigInt karatsuba(BigInt n, BigInt k) {
-            BigInt n1 = 0, n2 = 0, k1 = 0, k2 = 0;
+            BigInt n1 = 0, n2 = 0, k1 = 0, k2 = 0, r0 = 0, r1 = 0, r2 = 0;
             BigInt B = 1;
             size_t d = n.digits / 2;
             for(size_t i = 0; i < d; ++i) {
@@ -136,7 +136,9 @@ namespace Rytar {
             }
             if(2 * d < n.digits) n2 += B * n.element[2 * d];
             if(2 * d < k.digits) k2 += B * k.element[2 * d];
-            return n1 * k1 + (n1 * k2 + n2 * k1) * B + n2 * k2 * B * B;
+            r2 = n2 * k2;
+            r0 = n1 * k1;
+            return r0 + (r2 + r0 - (n2 - n1) * (k2 - k1)) * B + r2 * B * B;
         }
         
         template<typename T>
