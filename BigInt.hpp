@@ -61,26 +61,28 @@ namespace Rytar {
             digits = s.size();
             element.resize(digits + 50);
             status = Status::Plus;
-            for(size_t i = 0; i < digits + 0; ++i) {
-                if(s[digits - i - 1] == '-') {
-                    digits--;
-                    status = Status::Minus;
-                }
-                else element[i] = s[digits - i - 1] - '0';
+            for(size_t i = 0; i < digits - 1; ++i) {
+                element[i] = s[digits - i - 1] - '0';
             }
+            if(s[0] == '-') {
+                digits--;
+                status = Status::Minus;
+            }
+            else element[digits - 1] = s[0] - '0';
         }
         
         BigInt(const std::string s) {
             digits = s.size();
             element.resize(digits + 50);
             status = Status::Plus;
-            for(size_t i = 0; i < digits; ++i) {
-                if(s[digits - i - 1] == '-') {
-                    digits--;
-                    status = Status::Minus;
-                }
-                else element[i] = s[digits - i - 1] - '0';
+            for(size_t i = 0; i < digits - 1; ++i) {
+                element[i] = s[digits - i - 1] - '0';
             }
+            if(s[0] == '-') {
+                digits--;
+                status = Status::Minus;
+            }
+            else element[digits - 1] = s[0] - '0';
         }
 
         // 算術演算
