@@ -22,7 +22,6 @@ namespace Rytar {
         size_t digits;
         Status status;
 
-
     public:
         BigInt() {
             element.resize(50);
